@@ -3,7 +3,16 @@ import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import StarIcon from "@mui/icons-material/Star";
 import Image from "next/image";
 
-const Lesson = () => {
+type Props = {
+  createdAt: string;
+  name: string;
+  number: number;
+  updatedAt: string;
+  _id: string;
+};
+
+const Lesson = ({ ls }: { ls: Props }) => {
+  const { name, _id } = ls;
   return (
     <Box
       sx={{
@@ -28,7 +37,7 @@ const Lesson = () => {
         />
         <Box>
           <Typography variant="h5" fontWeight={450}>
-            Learn Figma
+            {name}
           </Typography>
           <Typography color="#868686" lineHeight={1}>
             by Hayat
@@ -36,18 +45,20 @@ const Lesson = () => {
         </Box>
         <Box display="flex" gap={1} alignItems="center">
           <AccessTimeFilledIcon />
-          <Typography variant="h6">06h 30m</Typography>
+          <Typography variant="h6">30m</Typography>
         </Box>
         <Box display="flex" gap={1} alignItems="center">
           <StarIcon />
           <Typography variant="h6">4.9</Typography>
         </Box>
         <Button
+          LinkComponent={"a"}
+          href={`/lesson/${_id}`}
           variant="contained"
           sx={{
             borderRadius: 2,
           }}>
-          View Vocabulary
+          View Vocab
         </Button>
       </Box>
     </Box>

@@ -8,19 +8,17 @@ import {
   TextField,
   Typography,
   Paper,
-  FormHelperText,
-  Avatar,
   Grid2,
+  Avatar,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { FaUser, FaEnvelope, FaLock, FaCloudUploadAlt } from "react-icons/fa";
+import { FaEnvelope, FaLock } from "react-icons/fa";
 import Link from "next/link";
-import { registerApi } from "@/services/auth/register.api";
-import CtmSnackbar from "@/components/common/Snackbar";
+import { loginApi } from "@/services/auth/login.api";
 import { useRouter } from "next/navigation";
+import CtmSnackbar from "@/components/common/Snackbar";
 
 type errorType = {
-  name?: string;
   email?: string;
   password?: string;
 };
@@ -41,36 +39,13 @@ const StyledAvatar = styled(Avatar)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-const VisuallyHiddenInput = styled("input")({
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
-  height: 1,
-  overflow: "hidden",
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  whiteSpace: "nowrap",
-  width: 1,
-});
-
-const RegistrationPage = () => {
+const LoginPage = () => {
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
   });
 
   const navigate = useRouter();
-
-  const [errors, setErrors] = useState<errorType>({
-    name: "",
-    email: "",
-    password: "",
-  });
-  const [photo, setPhoto] = useState({
-    name: "",
-  });
-  const [previewUrl, setPreviewUrl] = useState("");
 
   const [alert, setAlert] = useState(false);
 
@@ -79,11 +54,13 @@ const RegistrationPage = () => {
     title: "",
   });
 
+  const [errors, setErrors] = useState<errorType>({
+    email: "",
+    password: "",
+  });
+
   const validateForm = () => {
     const newErrors: errorType = {};
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -108,39 +85,23 @@ const RegistrationPage = () => {
     }
   };
 
-  const handlePhotoChange = (e: any) => {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith("image/")) {
-      setPhoto(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const validationErrors = validateForm();
-    console.log("btn clicked");
     if (Object.keys(validationErrors).length === 0) {
-      const formDataWithImage = new FormData();
-      formDataWithImage.append("data", JSON.stringify(formData));
-      formDataWithImage.append("image", photo as any);
+      const userLogin = await loginApi(formData);
 
-      const userRegister = await registerApi(formDataWithImage);
-
-      if (userRegister.success) {
+      console.log(userLogin);
+      if (userLogin.success) {
         setAlert(true);
-        setSnack({ severity: "success", title: userRegister.message });
+        setSnack({ severity: "success", title: userLogin.message });
       } else {
         setAlert(true);
-        return setSnack({ severity: "error", title: userRegister.message });
+        return setSnack({ severity: "error", title: userLogin.message });
       }
 
       setTimeout(() => {
-        navigate.push("/auth/login");
+        navigate.push("/");
       }, 1500);
     } else {
       setErrors(validationErrors);
@@ -159,26 +120,12 @@ const RegistrationPage = () => {
         height: "80vh",
       }}>
       <StyledPaper elevation={3}>
-        <StyledAvatar src={previewUrl} />
+        <StyledAvatar />
         <Typography component="h1" variant="h5" gutterBottom>
-          Registration
+          Login
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid2 container spacing={2}>
-            <Grid2 size={{ xs: 12 }}>
-              <TextField
-                fullWidth
-                label="Name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                error={!!errors.name}
-                helperText={errors.name}
-                InputProps={{
-                  startAdornment: <FaUser style={{ marginRight: "8px" }} />,
-                }}
-              />
-            </Grid2>
             <Grid2 size={{ xs: 12 }}>
               <TextField
                 fullWidth
@@ -209,42 +156,23 @@ const RegistrationPage = () => {
                 }}
               />
             </Grid2>
-            <Grid2 size={{ xs: 12 }}>
-              <Button
-                component="label"
-                variant="outlined"
-                startIcon={<FaCloudUploadAlt />}
-                fullWidth>
-                Upload Photo
-                <VisuallyHiddenInput
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePhotoChange}
-                />
-              </Button>
-              {photo?.name && (
-                <FormHelperText sx={{ ml: 1 }}>
-                  Selected file: {photo.name}
-                </FormHelperText>
-              )}
-            </Grid2>
           </Grid2>
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}>
-            Register
+            Login
           </Button>
 
           <Typography variant="body2" align="center">
-            Already have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               style={{
                 color: "#1976D2",
               }}
-              href="/auth/login">
-              Login
+              href="/auth/register">
+              Register
             </Link>
           </Typography>
         </Box>
@@ -255,4 +183,4 @@ const RegistrationPage = () => {
   );
 };
 
-export default RegistrationPage;
+export default LoginPage;

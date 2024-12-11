@@ -27,13 +27,13 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 }));
 
 // Inspired by the former Facebook spinners.
-export default function CustomizedProgressBars() {
+const VocabularyProgress = () => {
   return (
     <Stack spacing={2} sx={{ flexGrow: 1, width: "100%", mb: 1 }}>
       <Box>
         <Typography
           fontWeight={"bold"}
-          fontSize={16}
+          fontSize={18}
           variant="body2"
           color="text.secondary">
           Vocabulary Progress
@@ -43,3 +43,6 @@ export default function CustomizedProgressBars() {
     </Stack>
   );
 }
+
+
+export default VocabularyProgress

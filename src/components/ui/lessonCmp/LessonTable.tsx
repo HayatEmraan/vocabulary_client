@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState } from "react";
@@ -33,7 +34,7 @@ import CtmButton from "../../common/Button";
 import CtmSearch from "../../common/Search";
 import StatsCard from "@/components/common/StatsCard";
 
-const LessonTable = () => {
+const LessonTable = ({ lessons }: { lessons: any[] }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [orderBy, setOrderBy] = useState("id");
@@ -132,6 +133,8 @@ const LessonTable = () => {
       ? (a, b) => descendingComparator(a, b, orderBy)
       : (a, b) => -descendingComparator(a, b, orderBy);
   };
+
+  console.log(lessons);
 
   const filteredData = mockData
     .filter((row) =>

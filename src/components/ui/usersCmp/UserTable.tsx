@@ -8,7 +8,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   TablePagination,
   IconButton,
   Typography,
@@ -16,7 +15,6 @@ import {
   Tooltip,
   Collapse,
   Grid,
-  Card,
   Grid2,
 } from "@mui/material";
 import { styled } from "@mui/system";
@@ -47,7 +45,19 @@ const DetailBox = styled(Box)(() => ({
   borderRadius: "4px",
 }));
 
-const UserManagementTable = () => {
+type Props = {
+  _id: string;
+  name: string;
+  email: string;
+  password: string;
+  photoURL: string;
+  isActive: boolean;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+const UserManagementTable = ({ users }: { users: Props[] }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
@@ -240,7 +250,7 @@ const UserManagementTable = () => {
         />
       </Box>
 
-      <StyledTableContainer component={Paper}>
+      <StyledTableContainer>
         <Table stickyHeader aria-label="user management table">
           <TableHead>
             <TableRow>
@@ -260,29 +270,29 @@ const UserManagementTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedData.map((user) => (
-              <React.Fragment key={user.id}>
+            {users.map((user) => (
+              <React.Fragment key={user._id}>
                 <TableRow hover>
                   <TableCell padding="checkbox">
                     <IconButton
                       size="small"
-                      onClick={() => handleExpandRow(user.id)}
+                      onClick={() => handleExpandRow(user._id)}
                       aria-label="expand row">
-                      {expandedRow === user.id ? (
+                      {expandedRow === user._id ? (
                         <FaChevronUp />
                       ) : (
                         <FaChevronDown />
                       )}
                     </IconButton>
                   </TableCell>
-                  <TableCell>{user.id}</TableCell>
+                  <TableCell>{user._id?.slice(0, 5)}</TableCell>
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.role}</TableCell>
                   <TableCell>
                     <Tooltip title="Edit user">
                       <IconButton
-                        onClick={() => handleEdit(user.id)}
+                        onClick={() => handleEdit(user._id)}
                         aria-label={`Edit user ${user.name}`}
                         color="primary">
                         <FaEdit />
@@ -290,7 +300,7 @@ const UserManagementTable = () => {
                     </Tooltip>
                     <Tooltip title="Delete user">
                       <IconButton
-                        onClick={() => handleDelete(user.id)}
+                        onClick={() => handleDelete(user._id)}
                         aria-label={`Delete user ${user.name}`}
                         color="error">
                         <FaTrash />
@@ -303,7 +313,7 @@ const UserManagementTable = () => {
                     style={{ paddingBottom: 0, paddingTop: 0 }}
                     colSpan={6}>
                     <Collapse
-                      in={expandedRow === user.id}
+                      in={expandedRow === user._id}
                       timeout="auto"
                       unmountOnExit>
                       <DetailBox>

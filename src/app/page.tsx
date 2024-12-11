@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import CourseBox from "@/components/ui/homeCmp/CourseBox";
 import Greetings from "@/components/ui/homeCmp/Greetings";
 import HaltCourse from "@/components/ui/homeCmp/HaltCourse";
@@ -7,8 +8,12 @@ import PremiumCard from "@/components/ui/homeCmp/PremiumCard";
 import BasicArea from "@/components/ui/homeCmp/YourStats";
 // import Search from "@/components/ui/Search";
 import { Box, Grid2, Typography } from "@mui/material";
+import { getAllLessonApi } from "@/services/commonApi/lesson.api";
 
-export default function Home() {
+const Home = async () => {
+  const lessons = await getAllLessonApi();
+
+  console.log(lessons);
   return (
     <>
       {/* <Search /> */}
@@ -20,11 +25,10 @@ export default function Home() {
             All Lessons
           </Typography>
           <Box display="flex" flexDirection="column" gap={2} mt={2}>
-            <Lesson />
-            <Lesson />
-            <Lesson />
-            <Lesson />
-            <Lesson />
+            {lessons?.data?.map((lesson: any) => (
+              <Lesson ls={lesson} key={lesson._id} />
+            ))}
+
             <PaginationLink />
           </Box>
         </Grid2>
@@ -54,4 +58,6 @@ export default function Home() {
       </Grid2>
     </>
   );
-}
+};
+
+export default Home;

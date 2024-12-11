@@ -1,5 +1,5 @@
 import { Box, Button, Typography } from "@mui/material";
-import RecipeReviewCard from "../VocabularyCard";
+import RecipeReviewCard from "./VocabularyCard";
 
 const Vocabulary = () => {
   return (
