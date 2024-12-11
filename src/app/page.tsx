@@ -4,6 +4,7 @@ import HaltCourse from "@/components/ui/HaltCourse";
 import Lesson from "@/components/ui/Lesson";
 import PaginationLink from "@/components/ui/Pagination";
 import PremiumCard from "@/components/ui/PremiumCard";
+import BasicArea from "@/components/ui/YourStats";
 // import Search from "@/components/ui/Search";
 import { Box, Grid2, Typography } from "@mui/material";
 
@@ -23,6 +24,7 @@ export default function Home() {
             <Lesson />
             <Lesson />
             <Lesson />
+            <Lesson />
             <PaginationLink />
           </Box>
         </Grid2>
@@ -30,6 +32,21 @@ export default function Home() {
           <Box display="flex" gap={2}>
             <CourseBox number={3} title="Course Completed" />
             <CourseBox number={4} title="Course Progress" />
+          </Box>
+
+          <Box mb={4}>
+            <Typography variant="h5" fontWeight={450} mt={4}>
+              Your Statistics
+            </Typography>
+
+            <Box
+              sx={{
+                bgcolor: "#e4e4e4",
+                mt: 2,
+                borderRadius: 1.5,
+              }}>
+              <BasicArea />
+            </Box>
           </Box>
 
           <PremiumCard />

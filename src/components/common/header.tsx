@@ -59,7 +59,7 @@ const Header = () => {
           <ListItemText primary="Home" />
         </ListItem>
         <ListItem>
-          <ListItemText primary="About" />
+          <ListItemText primary="Tutorials" />
         </ListItem>
         <ListItem>
           <ListItemText primary="Contact" />
@@ -83,9 +83,7 @@ const Header = () => {
             color="inherit"
             sx={{
               fontWeight: 600,
-            }}>
-            Vocab
-          </Typography>
+            }}></Typography>
         </Box>
 
         {isMobile ? (
@@ -98,8 +96,12 @@ const Header = () => {
           </IconButton>
         ) : (
           <NavItems>
-            <Button color="inherit">Home</Button>
-            <Button color="inherit">About</Button>
+            <Button color="inherit" LinkComponent={"a"} href="/">
+              Home
+            </Button>
+            <Button LinkComponent={"a"} href="/tutorials" color="inherit">
+              Tutorials
+            </Button>
             <Button color="inherit">Contact</Button>
 
             <IconButton onClick={handleUserMenuClick}>
@@ -115,8 +117,6 @@ const Header = () => {
           anchorEl={userMenuAnchor}
           open={Boolean(userMenuAnchor)}
           onClose={handleUserMenuClose}>
-          <MenuItem onClick={handleUserMenuClose}>Profile</MenuItem>
-          <MenuItem onClick={handleUserMenuClose}>Settings</MenuItem>
           <MenuItem onClick={handleUserMenuClose}>Logout</MenuItem>
         </Menu>
 
