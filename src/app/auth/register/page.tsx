@@ -1,4 +1,4 @@
-import RegistrationPage from "@/components/ui/Registration";
+import RegistrationPage from "@/components/ui/authCmp/Registration";
 
 const Page = () => {
   return (

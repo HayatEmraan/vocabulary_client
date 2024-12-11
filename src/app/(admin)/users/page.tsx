@@ -1,4 +1,4 @@
-import UserManagementTable from "@/components/ui/UserTable";
+import UserManagementTable from "@/components/ui/usersCmp/UserTable";
 
 const Page = () => {
   return (

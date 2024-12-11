@@ -1,6 +1,6 @@
-import Vocabulary from "@/components/ui/Vocabulary";
-import AccordionUsage from "@/components/ui/VocabularyAccordion";
-import CustomizedProgressBars from "@/components/ui/VocabularyProgress";
+import Vocabulary from "@/components/ui/vocabularyCmp/Vocabulary";
+import AccordionUsage from "@/components/ui/vocabularyCmp/VocabularyAccordion";
+import CustomizedProgressBars from "@/components/ui/vocabularyCmp/VocabularyProgress";
 import { Grid2 } from "@mui/material";
 
 const Page = () => {

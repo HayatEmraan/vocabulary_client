@@ -15,12 +15,9 @@ import {
   Box,
   Tooltip,
   Grid,
-  Card,
-  CardContent,
   Typography,
   Collapse,
-  TextField,
-  InputAdornment,
+  Grid2,
 } from "@mui/material";
 import {
   FaEdit,
@@ -28,13 +25,15 @@ import {
   FaEye,
   FaChevronDown,
   FaChevronUp,
-  FaSearch,
   FaBook,
   FaCheckCircle,
   FaPencilAlt,
 } from "react-icons/fa";
+import CtmButton from "../../common/Button";
+import CtmSearch from "../../common/Search";
+import StatsCard from "@/components/common/StatsCard";
 
-const StatisticsTable = () => {
+const LessonTable = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [orderBy, setOrderBy] = useState("id");
@@ -172,82 +171,36 @@ const StatisticsTable = () => {
       <Typography variant="h4" gutterBottom>
         Lesson Management
       </Typography>
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={4}>
-          <Card>
-            <CardContent sx={{ display: "flex", alignItems: "center" }}>
-              <FaBook
-                size={40}
-                color="#1976d2"
-                style={{ marginRight: "16px" }}
-              />
-              <Box>
-                <Typography variant="h6" gutterBottom>
-                  Created Lessons
-                </Typography>
-                <Typography variant="h4" color="primary">
-                  {totalStats.createdLesson}
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Card>
-            <CardContent sx={{ display: "flex", alignItems: "center" }}>
-              <FaCheckCircle
-                size={40}
-                color="#2e7d32"
-                style={{ marginRight: "16px" }}
-              />
-              <Box>
-                <Typography variant="h6" gutterBottom>
-                  Completed Lessons
-                </Typography>
-                <Typography variant="h4" color="success.main">
-                  {totalStats.completedLesson}
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Card>
-            <CardContent sx={{ display: "flex", alignItems: "center" }}>
-              <FaPencilAlt
-                size={40}
-                color="#ed6c02"
-                style={{ marginRight: "16px" }}
-              />
-              <Box>
-                <Typography variant="h6" gutterBottom>
-                  Edited Lessons
-                </Typography>
-                <Typography variant="h4" color="warning.main">
-                  {totalStats.editedLesson}
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+      <Grid2 container spacing={3} sx={{ mb: 3 }}>
+        <StatsCard number={totalStats.createdLesson} title="Created Lessons">
+          <FaBook size={40} color="#007bff" />
+        </StatsCard>
+        <StatsCard
+          number={totalStats.completedLesson}
+          title="Completed Lessons">
+          <FaCheckCircle size={40} color="#007bff" />
+        </StatsCard>
+        <StatsCard number={totalStats.editedLesson} title="Edited Lessons">
+          <FaPencilAlt size={40} color="#6c757d" />
+        </StatsCard>
+      </Grid2>
 
-      <TextField
-        fullWidth
-        margin="normal"
-        variant="outlined"
-        placeholder="Search..."
-        value={searchQuery}
-        onChange={handleSearchChange}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <FaSearch />
-            </InputAdornment>
-          ),
-        }}
-        sx={{ mb: 2 }}
-      />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
+        }}>
+        <CtmButton />
+
+        <CtmSearch
+          searchQuery={searchQuery}
+          handleSearch={handleSearchChange}
+          placeholder="Search by name..."
+          ariaLabel="Search..."
+        />
+      </Box>
 
       <TableContainer component={Paper} sx={{ mb: 2 }}>
         <Table sx={{ minWidth: 650 }} aria-label="statistics table">
@@ -374,4 +327,4 @@ const StatisticsTable = () => {
   );
 };
 
-export default StatisticsTable;
+export default LessonTable;

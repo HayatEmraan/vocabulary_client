@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState } from "react";
@@ -16,49 +17,31 @@ import {
   Stepper,
   TextField,
   Typography,
-  styled,
 } from "@mui/material";
-import { FiUpload } from "react-icons/fi";
 
-const VisuallyHiddenInput = styled("input")`
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  white-space: nowrap;
-  width: 1px;
-`;
-
-const PreviewImage = styled("img")`
-  max-width: 200px;
-  max-height: 200px;
-  object-fit: cover;
-  margin: 16px 0;
-`;
-
-const MultiStepForm = () => {
+const VocabularyCreate = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
-    name: "",
-    number: "",
-    photo: null,
-    photoPreview: null,
-    category: "",
+    word: "",
+    pronunciation: "",
+    meaning: "",
+    lesson: "",
   });
 
+  const [lesson, setLesson] = useState("");
+
   const [errors, setErrors] = useState({
-    name: false,
-    number: false,
+    word: false,
+    pronunciation: false,
+    meaning: false,
   });
 
   const handleNext = () => {
     if (activeStep === 0) {
       const newErrors = {
-        name: !formData.name,
-        number: !formData.number || !/^\d+$/.test(formData.number),
+        word: !formData.word,
+        pronunciation: !formData.pronunciation,
+        meaning: !formData.meaning,
       };
       setErrors(newErrors);
 
@@ -73,7 +56,11 @@ const MultiStepForm = () => {
     setActiveStep((prevStep) => prevStep - 1);
   };
 
-  const handleInputChange = (field) => (event) => {
+  const handleInputChange = (field: string) => (event: any) => {
+    if (field === "lesson") {
+      setLesson(event.target.value);
+    }
+
     setFormData({
       ...formData,
       [field]: event.target.value,
@@ -86,17 +73,6 @@ const MultiStepForm = () => {
     }
   };
 
-  const handlePhotoUpload = (event) => {
-    const file = event.target.files[0];
-    if (file && file.type.startsWith("image/")) {
-      setFormData({
-        ...formData,
-        photo: file,
-        photoPreview: URL.createObjectURL(file),
-      });
-    }
-  };
-
   const handleSubmit = () => {
     console.log("Form submitted:", formData);
     // Handle form submission logic here
@@ -104,25 +80,33 @@ const MultiStepForm = () => {
 
   const categories = ["Technology", "Business", "Education", "Entertainment"];
 
-  const getStepContent = (step) => {
+  const getStepContent = (step: number) => {
     switch (step) {
       case 0:
         return (
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <TextField
-              label="Name"
-              value={formData.name}
-              onChange={handleInputChange("name")}
-              error={errors.name}
-              helperText={errors.name && "Name is required"}
+              label="Word"
+              value={formData.word}
+              onChange={handleInputChange("word")}
+              error={errors.word}
+              helperText={errors.word && "Word is required"}
               fullWidth
             />
             <TextField
-              label="Number"
-              value={formData.number}
-              onChange={handleInputChange("number")}
-              error={errors.number}
-              helperText={errors.number && "Please enter a valid number"}
+              label="Pronunciation"
+              value={formData.pronunciation}
+              onChange={handleInputChange("pronunciation")}
+              error={errors.pronunciation}
+              helperText={errors.pronunciation && "Pronunciation is required"}
+              fullWidth
+            />
+            <TextField
+              label="Meaning"
+              value={formData.meaning}
+              onChange={handleInputChange("meaning")}
+              error={errors.meaning}
+              helperText={errors.meaning && "Meaning is required"}
               fullWidth
             />
           </Box>
@@ -130,33 +114,12 @@ const MultiStepForm = () => {
       case 1:
         return (
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Button
-              component="label"
-              variant="contained"
-              startIcon={<FiUpload />}>
-              Upload Photo
-              <VisuallyHiddenInput
-                type="file"
-                accept="image/*"
-                onChange={handlePhotoUpload}
-              />
-            </Button>
-            {formData.photoPreview && (
-              <PreviewImage
-                src={formData.photoPreview}
-                alt="Preview"
-                onError={(e) => {
-                  e.target.src =
-                    "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1";
-                }}
-              />
-            )}
             <FormControl fullWidth>
-              <InputLabel>Category</InputLabel>
+              <InputLabel>Select Lesson</InputLabel>
               <Select
-                value={formData.category}
-                label="Category"
-                onChange={handleInputChange("category")}>
+                value={formData.lesson}
+                label="Select Lesson"
+                onChange={handleInputChange("lesson")}>
                 {categories.map((category) => (
                   <MenuItem key={category} value={category}>
                     {category}
@@ -173,19 +136,10 @@ const MultiStepForm = () => {
               <Typography variant="h6" gutterBottom>
                 Preview
               </Typography>
-              <Typography>Name: {formData.name}</Typography>
-              <Typography>Number: {formData.number}</Typography>
-              <Typography>Category: {formData.category}</Typography>
-              {formData.photoPreview && (
-                <PreviewImage
-                  src={formData.photoPreview}
-                  alt="Preview"
-                  onError={(e) => {
-                    e.target.src =
-                      "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1";
-                  }}
-                />
-              )}
+              <Typography>Word: {formData.word}</Typography>
+              <Typography>Pronunciation: {formData.pronunciation}</Typography>
+              <Typography>Meaning: {formData.meaning}</Typography>
+              <Typography>Lesson: {lesson}</Typography>
             </CardContent>
           </Card>
         );
@@ -198,7 +152,7 @@ const MultiStepForm = () => {
     <Box sx={{ maxWidth: 600, p: 3 }}>
       <Stepper activeStep={activeStep} orientation="vertical">
         <Step>
-          <StepLabel>Create Lesson</StepLabel>
+          <StepLabel>Create Vocabulary</StepLabel>
           <StepContent>
             {getStepContent(0)}
             <Box sx={{ mb: 2 }}>
@@ -212,7 +166,7 @@ const MultiStepForm = () => {
           </StepContent>
         </Step>
         <Step>
-          <StepLabel>Upload Photo & Category</StepLabel>
+          <StepLabel>Select Lesson</StepLabel>
           <StepContent>
             {getStepContent(1)}
             <Box sx={{ mb: 2 }}>
@@ -250,4 +204,4 @@ const MultiStepForm = () => {
   );
 };
 
-export default MultiStepForm;
+export default VocabularyCreate;

@@ -1,4 +1,4 @@
-import RecipeReviewCard from "@/components/ui/Card";
+import RecipeReviewCard from "@/components/ui/tutorialCmp/YTCard";
 import { Box } from "@mui/material";
 
 const Page = () => {

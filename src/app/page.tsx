@@ -1,10 +1,10 @@
-import CourseBox from "@/components/ui/CourseBox";
-import Greetings from "@/components/ui/Greetings";
-import HaltCourse from "@/components/ui/HaltCourse";
-import Lesson from "@/components/ui/Lesson";
+import CourseBox from "@/components/ui/homeCmp/CourseBox";
+import Greetings from "@/components/ui/homeCmp/Greetings";
+import HaltCourse from "@/components/ui/homeCmp/HaltCourse";
+import Lesson from "@/components/ui/lessonCmp/Lesson";
 import PaginationLink from "@/components/ui/Pagination";
-import PremiumCard from "@/components/ui/PremiumCard";
-import BasicArea from "@/components/ui/YourStats";
+import PremiumCard from "@/components/ui/homeCmp/PremiumCard";
+import BasicArea from "@/components/ui/homeCmp/YourStats";
 // import Search from "@/components/ui/Search";
 import { Box, Grid2, Typography } from "@mui/material";
 

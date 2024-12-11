@@ -1,10 +1,10 @@
-import LessonTable from "@/components/ui/lessonCmp/LessonTable";
+import VocabularyCreate from "@/components/ui/vocabularyCmp/VocabularyCreate";
 import { Box } from "@mui/material";
 
 const Page = () => {
   return (
     <Box>
-      <LessonTable />
+      <VocabularyCreate />
     </Box>
   );
 };

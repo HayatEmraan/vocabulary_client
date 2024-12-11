@@ -10,7 +10,6 @@ import {
   TableRow,
   Paper,
   TablePagination,
-  TextField,
   IconButton,
   Typography,
   Box,
@@ -18,7 +17,7 @@ import {
   Collapse,
   Grid,
   Card,
-  CardContent,
+  Grid2,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import {
@@ -31,39 +30,21 @@ import {
   FaUserShield,
   FaUserCheck,
 } from "react-icons/fa";
+import CtmSearch from "../../common/Search";
+import CtmButton from "../../common/Button";
+import StatsCard from "@/components/common/StatsCard";
 
-const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+const StyledTableContainer = styled(TableContainer)(() => ({
   maxHeight: "70vh",
   margin: "20px 0",
   backgroundColor: "#ffffff",
   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
 }));
 
-const SearchField = styled(TextField)(({ theme }) => ({
-  marginBottom: "20px",
-  width: "100%",
-  maxWidth: "400px",
-}));
-
-const DetailBox = styled(Box)(({ theme }) => ({
+const DetailBox = styled(Box)(() => ({
   padding: "20px",
   backgroundColor: "#f5f5f5",
   borderRadius: "4px",
-}));
-
-const StyledCard = styled(Card)(({ theme }) => ({
-  height: "100%",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
-  padding: "16px",
-  backgroundColor: "#f8f9fa",
-  transition: "transform 0.2s",
-  "&:hover": {
-    transform: "translateY(-5px)",
-    boxShadow: "0 6px 12px rgba(0, 0, 0, 0.1)",
-  },
 }));
 
 const UserManagementTable = () => {
@@ -230,56 +211,35 @@ const UserManagementTable = () => {
       </Typography>
 
       {/* Status Cards */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={4}>
-          <StyledCard>
-            <FaUserCheck size={24} color="#28a745" />
-            <CardContent>
-              <Typography variant="h6" component="div">
-                Active Users
-              </Typography>
-              <Typography textAlign={"center"} variant="h4" color="primary">
-                {activeUsers}
-              </Typography>
-            </CardContent>
-          </StyledCard>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <StyledCard>
-            <FaUserShield size={24} color="#007bff" />
-            <CardContent>
-              <Typography variant="h6" component="div">
-                Admin Users
-              </Typography>
-              <Typography variant="h4" color="primary">
-                {adminUsers}
-              </Typography>
-            </CardContent>
-          </StyledCard>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <StyledCard>
-            <FaUsers size={24} color="#6c757d" />
-            <CardContent>
-              <Typography variant="h6" component="div">
-                Regular Users
-              </Typography>
-              <Typography variant="h4" color="primary">
-                {regularUsers}
-              </Typography>
-            </CardContent>
-          </StyledCard>
-        </Grid>
-      </Grid>
+      <Grid2 container spacing={3} sx={{ mb: 3 }}>
+        <StatsCard number={activeUsers} title="Active Users">
+          <FaUserCheck size={24} color="#007bff" />
+        </StatsCard>
+        <StatsCard number={adminUsers} title="Admin Users">
+          <FaUserShield size={24} color="#007bff" />
+        </StatsCard>
+        <StatsCard number={regularUsers} title="Regular Users">
+          <FaUsers size={24} color="#6c757d" />
+        </StatsCard>
+      </Grid2>
 
-      <SearchField
-        label="Search users"
-        variant="outlined"
-        value={searchQuery}
-        onChange={handleSearch}
-        placeholder="Search by name or email"
-        aria-label="Search users"
-      />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
+        }}>
+        <CtmButton />
+
+        <CtmSearch
+          searchQuery={searchQuery}
+          handleSearch={handleSearch}
+          placeholder="Search by name or email"
+          ariaLabel="Search users"
+        />
+      </Box>
+
       <StyledTableContainer component={Paper}>
         <Table stickyHeader aria-label="user management table">
           <TableHead>
