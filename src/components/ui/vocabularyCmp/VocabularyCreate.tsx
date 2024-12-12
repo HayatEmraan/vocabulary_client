@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -19,7 +19,13 @@ import {
   Typography,
 } from "@mui/material";
 
-const VocabularyCreate = () => {
+import Editor from "../QuildEditor";
+import Quill from "quill";
+import CtmSnackbar from "@/components/common/Snackbar";
+import { useRouter } from "next/navigation";
+import { createVocabApi } from "@/services/adminApi/vacab.api";
+
+const VocabularyCreate = ({ lessons }: { lessons: any[] }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     word: "",
@@ -28,12 +34,21 @@ const VocabularyCreate = () => {
     lesson: "",
   });
 
+  const navigate = useRouter();
+
   const [lesson, setLesson] = useState("");
 
   const [errors, setErrors] = useState({
     word: false,
     pronunciation: false,
     meaning: false,
+  });
+
+  const [alert, setAlert] = useState(false);
+
+  const [snack, setSnack] = useState({
+    severity: "",
+    title: "",
   });
 
   const handleNext = () => {
@@ -65,7 +80,7 @@ const VocabularyCreate = () => {
       ...formData,
       [field]: event.target.value,
     });
-    if (errors[field]) {
+    if (errors[field as keyof typeof errors]) {
       setErrors({
         ...errors,
         [field]: false,
@@ -73,12 +88,41 @@ const VocabularyCreate = () => {
     }
   };
 
-  const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    // Handle form submission logic here
+  const handleSubmit = async () => {
+    const obj = {
+      ...formData,
+      useCase: content,
+    };
+
+    const createVocab = await createVocabApi(obj);
+
+    if (createVocab.success) {
+      setAlert(true);
+      setSnack({ severity: "success", title: createVocab.message });
+    } else {
+      setAlert(true);
+      return setSnack({ severity: "error", title: createVocab.message });
+    }
+
+    setTimeout(() => {
+      navigate.push("/auth/login");
+    }, 1500);
   };
 
-  const categories = ["Technology", "Business", "Education", "Entertainment"];
+  const editorRef = useRef<Quill | null>(null);
+  const [content, setContent] = useState<string>("");
+
+  const handleTextChange = () => {
+    const quill = editorRef.current;
+    if (quill) {
+      const htmlContent = quill.root.innerHTML;
+      setContent(htmlContent);
+    } else {
+      console.error("Editor is not initialized.");
+    }
+  };
+
+  console.log(lessons);
 
   const getStepContent = (step: number) => {
     switch (step) {
@@ -120,13 +164,16 @@ const VocabularyCreate = () => {
                 value={formData.lesson}
                 label="Select Lesson"
                 onChange={handleInputChange("lesson")}>
-                {categories.map((category) => (
-                  <MenuItem key={category} value={category}>
-                    {category}
+                {lessons?.map((lesson) => (
+                  <MenuItem key={lesson._id} value={lesson._id}>
+                    {lesson.name}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
+            <Typography>Where to use this word?</Typography>
+
+            <Editor ref={editorRef} onTextChange={handleTextChange} />
           </Box>
         );
       case 2:
@@ -140,6 +187,8 @@ const VocabularyCreate = () => {
               <Typography>Pronunciation: {formData.pronunciation}</Typography>
               <Typography>Meaning: {formData.meaning}</Typography>
               <Typography>Lesson: {lesson}</Typography>
+              <Typography variant="h6">Where to use this word?:</Typography>
+              <Typography dangerouslySetInnerHTML={{ __html: content }} />
             </CardContent>
           </Card>
         );
@@ -169,11 +218,11 @@ const VocabularyCreate = () => {
           <StepLabel>Select Lesson</StepLabel>
           <StepContent>
             {getStepContent(1)}
-            <Box sx={{ mb: 2 }}>
+            <Box sx={{ mt: 6.5 }}>
               <Button
                 variant="contained"
                 onClick={handleNext}
-                sx={{ mt: 1, mr: 1 }}>
+                sx={{ mt: 1, mr: 1, bgcolor: "#1976D2" }}>
                 Continue
               </Button>
               <Button onClick={handleBack} sx={{ mt: 1, mr: 1 }}>
@@ -190,7 +239,7 @@ const VocabularyCreate = () => {
               <Button
                 variant="contained"
                 onClick={handleSubmit}
-                sx={{ mt: 1, mr: 1 }}>
+                sx={{ mt: 1, mr: 1, bgcolor: "#1976D2" }}>
                 Submit
               </Button>
               <Button onClick={handleBack} sx={{ mt: 1, mr: 1 }}>
@@ -200,6 +249,8 @@ const VocabularyCreate = () => {
           </StepContent>
         </Step>
       </Stepper>
+
+      <CtmSnackbar snack={snack} open={alert} setOpen={setAlert} />
     </Box>
   );
 };

@@ -16,6 +16,9 @@ import {
   styled,
 } from "@mui/material";
 import { FiUpload } from "react-icons/fi";
+import { useRouter } from "next/navigation";
+import CtmSnackbar from "@/components/common/Snackbar";
+import { createLessonApi } from "@/services/adminApi/lesson.api";
 
 const VisuallyHiddenInput = styled("input")`
   clip: rect(0 0 0 0);
@@ -50,6 +53,15 @@ const LessonCreate = () => {
     number: false,
   });
 
+  const navigate = useRouter();
+
+  const [alert, setAlert] = useState(false);
+
+  const [snack, setSnack] = useState({
+    severity: "",
+    title: "",
+  });
+
   const handleNext = () => {
     if (activeStep === 0) {
       const newErrors = {
@@ -75,7 +87,7 @@ const LessonCreate = () => {
       [field]: event.target.value,
     });
 
-    if (errors[field]) {
+    if (errors[field as keyof typeof errors]) {
       setErrors({
         ...errors,
         [field]: false,
@@ -94,9 +106,35 @@ const LessonCreate = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log("Form submitted:", formData);
-    // Handle form submission logic here
+
+    const obj = {
+      name: formData.name,
+      number: Number(formData.number),
+    };
+
+    console.log(formData.photo);
+
+    const formDataWithImage = new FormData();
+    formDataWithImage.append("data", JSON.stringify(obj));
+    formDataWithImage.append("image", formData?.photo as any);
+
+    const createLesson = await createLessonApi(formDataWithImage);
+
+    console.log(createLesson);
+
+    if (createLesson.success) {
+      setAlert(true);
+      setSnack({ severity: "success", title: createLesson.message });
+    } else {
+      setAlert(true);
+      return setSnack({ severity: "error", title: createLesson.message });
+    }
+
+    setTimeout(() => {
+      navigate.push("/auth/login");
+    }, 1500);
   };
 
   const getStepContent = (step: number) => {
@@ -127,6 +165,9 @@ const LessonCreate = () => {
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Button
               component="label"
+              sx={{
+                bgcolor: "#1976D2",
+              }}
               variant="contained"
               startIcon={<FiUpload />}>
               Upload Photo
@@ -200,7 +241,7 @@ const LessonCreate = () => {
               <Button
                 variant="contained"
                 onClick={handleNext}
-                sx={{ mt: 1, mr: 1 }}>
+                sx={{ mt: 1, mr: 1, bgcolor: "#1976D2" }}>
                 Continue
               </Button>
               <Button onClick={handleBack} sx={{ mt: 1, mr: 1 }}>
@@ -217,7 +258,7 @@ const LessonCreate = () => {
               <Button
                 variant="contained"
                 onClick={handleSubmit}
-                sx={{ mt: 1, mr: 1 }}>
+                sx={{ mt: 1, mr: 1, bgcolor: "#1976D2" }}>
                 Submit
               </Button>
               <Button onClick={handleBack} sx={{ mt: 1, mr: 1 }}>
@@ -227,6 +268,8 @@ const LessonCreate = () => {
           </StepContent>
         </Step>
       </Stepper>
+
+      <CtmSnackbar snack={snack} open={alert} setOpen={setAlert} />
     </Box>
   );
 };

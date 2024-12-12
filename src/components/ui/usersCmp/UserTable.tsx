@@ -15,7 +15,6 @@ import {
   Tooltip,
   Collapse,
   Grid,
-  Grid2,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import {
@@ -24,13 +23,10 @@ import {
   FaSort,
   FaChevronDown,
   FaChevronUp,
-  FaUsers,
-  FaUserShield,
-  FaUserCheck,
 } from "react-icons/fa";
 import CtmSearch from "../../common/Search";
 import CtmButton from "../../common/Button";
-import StatsCard from "@/components/common/StatsCard";
+import moment from "moment";
 
 const StyledTableContainer = styled(TableContainer)(() => ({
   maxHeight: "70vh",
@@ -57,7 +53,12 @@ type Props = {
   updatedAt: string;
 };
 
-const UserManagementTable = ({ users }: { users: Props[] }) => {
+type userProps = {
+  users: Props[];
+  children: React.ReactNode;
+};
+
+const UserManagementTable = ({ users, children }: userProps) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
@@ -158,12 +159,6 @@ const UserManagementTable = ({ users }: { users: Props[] }) => {
     },
   ];
 
-  const activeUsers = mockUsers.filter(
-    (user) => user.status === "Active"
-  ).length;
-  const adminUsers = mockUsers.filter((user) => user.role === "Admin").length;
-  const regularUsers = mockUsers.filter((user) => user.role === "User").length;
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -221,17 +216,7 @@ const UserManagementTable = ({ users }: { users: Props[] }) => {
       </Typography>
 
       {/* Status Cards */}
-      <Grid2 container spacing={3} sx={{ mb: 3 }}>
-        <StatsCard number={activeUsers} title="Active Users">
-          <FaUserCheck size={24} color="#007bff" />
-        </StatsCard>
-        <StatsCard number={adminUsers} title="Admin Users">
-          <FaUserShield size={24} color="#007bff" />
-        </StatsCard>
-        <StatsCard number={regularUsers} title="Regular Users">
-          <FaUsers size={24} color="#6c757d" />
-        </StatsCard>
-      </Grid2>
+      {children}
 
       <Box
         sx={{
@@ -255,7 +240,7 @@ const UserManagementTable = ({ users }: { users: Props[] }) => {
           <TableHead>
             <TableRow>
               <TableCell padding="checkbox" />
-              {["id", "name", "email", "role"].map((header) => (
+              {["id", "name", "email", "status", "role"].map((header) => (
                 <TableCell
                   key={header}
                   onClick={() => handleSort(header)}
@@ -270,8 +255,8 @@ const UserManagementTable = ({ users }: { users: Props[] }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
-              <React.Fragment key={user._id}>
+            {users.map(({ userId, adminId, ...user }) => (
+              <React.Fragment key={userId._id}>
                 <TableRow hover>
                   <TableCell padding="checkbox">
                     <IconButton
@@ -285,10 +270,17 @@ const UserManagementTable = ({ users }: { users: Props[] }) => {
                       )}
                     </IconButton>
                   </TableCell>
-                  <TableCell>{user._id?.slice(0, 5)}</TableCell>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
+                  <TableCell>{userId._id?.slice(0, 5)}</TableCell>
+                  <TableCell>{userId.name}</TableCell>
+                  <TableCell>{userId.email}</TableCell>
+                  <TableCell
+                    sx={{
+                      color: userId.isActive ? "green" : "red",
+                      fontWeight: "bold",
+                    }}>
+                    {userId.isActive ? "Active" : "Blocked"}
+                  </TableCell>
+                  <TableCell>{userId.role}</TableCell>
                   <TableCell>
                     <Tooltip title="Edit user">
                       <IconButton
@@ -312,7 +304,7 @@ const UserManagementTable = ({ users }: { users: Props[] }) => {
                   <TableCell
                     style={{ paddingBottom: 0, paddingTop: 0 }}
                     colSpan={6}>
-                    <Collapse
+                    {/* <Collapse
                       in={expandedRow === user._id}
                       timeout="auto"
                       unmountOnExit>
@@ -370,6 +362,31 @@ const UserManagementTable = ({ users }: { users: Props[] }) => {
                           </Grid>
                         </Grid>
                       </DetailBox>
+                    </Collapse> */}
+
+                    <Collapse
+                      in={expandedRow === user._id}
+                      timeout="auto"
+                      unmountOnExit>
+                      <Box sx={{ margin: 2 }}>
+                        <Typography variant="h6" gutterBottom>
+                          Additional Details
+                        </Typography>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} md={6}>
+                            <Typography variant="subtitle2">
+                              Last Edited:{" "}
+                              {moment(user.updatedAt).format("LLL")}
+                            </Typography>
+                            <Typography variant="subtitle2">
+                              Updated By: {adminId?.name ?? "N/A"}
+                            </Typography>
+                            <Typography variant="subtitle2">
+                              Update Reason: {user.reason}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </Box>
                     </Collapse>
                   </TableCell>
                 </TableRow>

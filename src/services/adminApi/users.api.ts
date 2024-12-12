@@ -2,6 +2,15 @@
 "use server";
 import axiosInstance from "../axiosInstance";
 
+export async function userStatsApi() {
+  try {
+    const res = await axiosInstance.get("user/stats");
+    return res.data;
+  } catch (error: any) {
+    return error?.response?.data;
+  }
+}
+
 export async function usersApi() {
   try {
     const res = await axiosInstance.get("user/all-users");
