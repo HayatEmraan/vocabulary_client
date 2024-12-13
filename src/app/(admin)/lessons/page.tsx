@@ -6,7 +6,7 @@ import { Box } from "@mui/material";
 
 const Page = async () => {
   const lessons = await getAllLessonApi();
-  const { data: lessonStats } = await lessonStatsApi();
+  const { data: lessonStats } = await lessonStatsApi() || {};
 
   return (
     <Box>

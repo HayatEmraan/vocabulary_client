@@ -23,14 +23,14 @@ const Charts = ({ stats }: any) => {
     const lessonMap = new Map<string, number>();
     const vocabMap = new Map<string, number>();
 
-    lesson.forEach((item: any) => {
+    lesson?.forEach((item: any) => {
       const formattedDate = moment(item.date, "YYYY MM DD").format(
         "YYYY-MM-DD"
       );
       lessonMap.set(formattedDate, item.count);
     });
 
-    vocab.forEach((item: any) => {
+    vocab?.forEach((item: any) => {
       const formattedDate = moment(item.date, "YYYY MM DD").format(
         "YYYY-MM-DD"
       );

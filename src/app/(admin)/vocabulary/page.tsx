@@ -5,8 +5,8 @@ import { getAllVocabApi } from "@/services/commonApi/vocab.api";
 import VocabularyStats from "@/components/ui/vocabularyCmp/VocabularyStats";
 
 const Page = async () => {
-  const { data: vocabStats } = await vocabStatsApi();
-  const { data: allVocab } = await getAllVocabApi();
+  const { data: vocabStats } = (await vocabStatsApi()) || {};
+  const { data: allVocab } = (await getAllVocabApi()) || {};
 
   return (
     <Box>

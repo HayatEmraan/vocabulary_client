@@ -5,7 +5,7 @@ import { Box } from "@mui/material";
 const Page = async ({ params }: { params: { id: string } }) => {
   const { id } = await params;
 
-  const { data: lesson } = await getSingleLessonApi(id);
+  const { data: lesson } = (await getSingleLessonApi(id)) || {};
 
   const obj = {
     name: lesson.name,

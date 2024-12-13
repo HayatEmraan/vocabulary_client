@@ -29,7 +29,15 @@ const Lesson = ({ ls, duration }: { ls: Props; duration: number }) => {
           justifyContent: "space-between",
           alignItems: "center",
         }}>
-        <Image src={ls?.photoURL} alt="figma" width={50} height={50} />
+        <Box
+          sx={{
+            display: {
+              xs: "none",
+              md: "block",
+            },
+          }}>
+          <Image src={ls?.photoURL} alt="figma" width={50} height={50} />
+        </Box>
         <Box>
           <Typography variant="h5" fontWeight={450}>
             {name}

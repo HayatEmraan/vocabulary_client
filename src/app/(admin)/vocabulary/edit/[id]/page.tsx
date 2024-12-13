@@ -6,9 +6,9 @@ import { Box } from "@mui/material";
 const Page = async ({ params }: { params: { id: string } }) => {
   const { id } = await params;
 
-  const { data: allLessons } = await getAllLessonApi();
+  const { data: allLessons } = await getAllLessonApi() || {};
 
-  const { data: vocab } = await getSingleVocabApi(id);
+  const { data: vocab } = await getSingleVocabApi(id) || {};
 
   const obj = {
     word: vocab.word,

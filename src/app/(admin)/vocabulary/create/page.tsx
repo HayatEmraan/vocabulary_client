@@ -3,11 +3,11 @@ import { getAllLessonApi } from "@/services/commonApi/lesson.api";
 import { Box } from "@mui/material";
 
 const Page = async () => {
-  const { data: allLessons } = await getAllLessonApi();
+  const { data: lessons } = (await getAllLessonApi()) || {};
 
   return (
     <Box>
-      <VocabularyCreate lessons={allLessons} />
+      <VocabularyCreate lessons={lessons} />
     </Box>
   );
 };

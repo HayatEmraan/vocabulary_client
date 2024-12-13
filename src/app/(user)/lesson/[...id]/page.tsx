@@ -10,8 +10,8 @@ import { Box } from "@mui/material";
 const Page = async ({ params }: { params: { id: string } }) => {
   const { id } = await params;
 
-  const { data: vocab } = await getSingleVocabApi(id[1]);
-  const lessonVocab = await getVocabByLessonApi(id[0]);
+  const { data: vocab } = (await getSingleVocabApi(id[1])) || {};
+  const lessonVocab = (await getVocabByLessonApi(id[0])) || {};
 
   const findIdx = lessonVocab?.data.findIndex(
     (item: any) => item._id === id[1]

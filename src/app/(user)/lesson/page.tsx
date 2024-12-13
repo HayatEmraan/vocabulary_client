@@ -13,16 +13,29 @@ import { meApi } from "@/services/commonApi/me.api";
 import { getLessonStatsApi } from "@/services/userApi/lesson.api";
 
 const Home = async () => {
-  const { data: ls } = await getAllLessonApi();
-  const me = await meApi();
+  let ls, me, stats;
 
-  const { data: stats } = await getLessonStatsApi();
+  try {
+    const lessonsResponse = await getAllLessonApi();
+    ls = lessonsResponse?.data || { lessons: [], duration: 0 };
+
+    const meResponse = await meApi();
+    me = meResponse?.data || null;
+
+    const statsResponse = await getLessonStatsApi();
+    stats = statsResponse?.data || { vocab: 0, lesson: 0, groupBy: [] };
+  } catch {
+    ls = { lessons: [], duration: 0 };
+    me = null;
+    stats = { vocab: 0, lesson: 0, groupBy: [] };
+  }
+
   const { lessons, duration } = ls;
   return (
     <>
       {/* <Search /> */}
       <Grid2 container spacing={2}>
-        <Grid2 size={7}>
+        <Grid2 size={{ xs: 12, md: 7 }} sx={{ mt: { xs: 3, md: 1 } }}>
           <Greetings user={me?.data} />
           <HaltCourse />
           <Typography variant="h5" fontWeight={450} mt={4}>
@@ -35,10 +48,12 @@ const Home = async () => {
             {/* <PaginationLink /> */}
           </Box>
         </Grid2>
-        <Grid2 size={5}>
-          <Box display="flex" gap={2}>
+        <Grid2 size={{ xs: 12, md: 5 }}>
+          <Box sx={{ display: { md: "flex", gap: 4 } }}>
             <CourseBox number={stats?.vocab} title="Vocab Completed" />
-            <CourseBox number={stats?.lesson} title="Lesson Completed" />
+            <Box sx={{ mt: { xs: 3, md: 0 } }}>
+              <CourseBox number={stats?.lesson} title="Lesson Completed" />
+            </Box>
           </Box>
 
           <Box mb={4}>

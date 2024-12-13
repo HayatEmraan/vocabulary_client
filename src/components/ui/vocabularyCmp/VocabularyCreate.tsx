@@ -18,13 +18,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-
-import Editor from "../QuildEditor";
 import Quill from "quill";
 import CtmSnackbar from "@/components/common/Snackbar";
 import { useRouter } from "next/navigation";
 import { createVocabApi } from "@/services/adminApi/vacab.api";
 import dynamic from "next/dynamic";
+
+const Editor = dynamic(() => import("../QuildEditor"), { ssr: false });
 
 type Props = {
   lessons: any[];

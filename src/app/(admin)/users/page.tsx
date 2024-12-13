@@ -4,7 +4,7 @@ import { usersApi, userStatsApi } from "@/services/adminApi/users.api";
 
 const Page = async () => {
   const users = await usersApi();
-  const { data: userStats } = await userStatsApi();
+  const { data: userStats } = await userStatsApi() || {};
 
   return (
     <>

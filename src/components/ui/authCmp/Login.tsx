@@ -109,11 +109,11 @@ const LoginPage = () => {
   };
 
   const handleAdminLogin = () => {
-    setFormData({ email: "6a8wP@example.com", password: "12345678" });
+    setFormData({ email: "hayatprestige@gmail.com", password: "Ig#opI12" });
   };
 
   const handleUserLogin = () => {
-    setFormData({ email: "BZVJt@example.com", password: "12345678" });
+    setFormData({ email: "emraanhasanhayat@gmail.com", password: "Ig#opI12" });
   };
 
   return (
