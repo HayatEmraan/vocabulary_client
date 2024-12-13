@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
-import axiosInstance from "../axiosInstance";
+
+import axiosInstance from "@/utils/axiosInstance";
 
 export async function lessonStatsApi() {
   try {
@@ -13,7 +14,11 @@ export async function lessonStatsApi() {
 
 export async function createLessonApi(payload: any) {
   try {
-    const res = await axiosInstance.post("lesson/create-lesson", payload);
+    const res = await axiosInstance.post("lesson/create-lesson", payload, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return res.data;
   } catch (error: any) {
     return error?.response?.data;

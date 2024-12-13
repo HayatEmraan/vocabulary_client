@@ -9,17 +9,18 @@ import BasicArea from "@/components/ui/homeCmp/YourStats";
 // import Search from "@/components/ui/Search";
 import { Box, Grid2, Typography } from "@mui/material";
 import { getAllLessonApi } from "@/services/commonApi/lesson.api";
+import { meApi } from "@/services/commonApi/me.api";
 
 const Home = async () => {
   const lessons = await getAllLessonApi();
+  const me = await meApi();
 
-  console.log(lessons);
   return (
     <>
       {/* <Search /> */}
       <Grid2 container spacing={2}>
         <Grid2 size={7}>
-          <Greetings />
+          <Greetings user={me?.data} />
           <HaltCourse />
           <Typography variant="h5" fontWeight={450} mt={4}>
             All Lessons
@@ -28,7 +29,6 @@ const Home = async () => {
             {lessons?.data?.map((lesson: any) => (
               <Lesson ls={lesson} key={lesson._id} />
             ))}
-
             <PaginationLink />
           </Box>
         </Grid2>

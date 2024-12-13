@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, Typography } from "@mui/material";
 import Image from "next/image";
 import helloGreet from "./hello.gif";
 
-const Greetings = () => {
+const Greetings = ({ user }: { user: any }) => {
   return (
     <Box
       sx={{
@@ -13,7 +14,7 @@ const Greetings = () => {
         position: "relative",
       }}>
       <Typography color="#232323" variant="h4" fontWeight={"bold"}>
-        Hello Hayat!
+        Hello {user?.name}!
       </Typography>
       <Typography
         sx={{

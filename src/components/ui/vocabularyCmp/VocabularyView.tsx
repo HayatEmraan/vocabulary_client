@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -12,23 +12,18 @@ import {
   Paper,
   IconButton,
   TablePagination,
-  TableSortLabel,
   Box,
   Tooltip,
   Grid,
   Typography,
   Collapse,
 } from "@mui/material";
-import {
-  FaEdit,
-  FaTrash,
-  FaEye,
-  FaChevronDown,
-  FaChevronUp,
-} from "react-icons/fa";
-import CtmButton from "../../common/Button";
-import CtmSearch from "../../common/Search";
+import { FaEdit, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import moment from "moment";
+import dynamic from "next/dynamic";
+
+const CtmSearch = dynamic(() => import("../../common/Search"), { ssr: false });
+const CtmButton = dynamic(() => import("../../common/Button"), { ssr: false });
 
 type Props = {
   lessons: any[];
@@ -38,118 +33,44 @@ type Props = {
 const VocabularyTable = ({ lessons, children }: Props) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [orderBy, setOrderBy] = useState("id");
-  const [order, setOrder] = useState("asc");
   const [expandedRow, setExpandedRow] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const mockData = [
-    {
-      id: 1,
-      name: "John Doe",
-      number: "123-456-7890",
-      createdBy: "Admin User",
-      createdLesson: 15,
-      completedLesson: 12,
-      editedLesson: 5,
-      lastEdited: "2024-01-15",
-      updatedBy: "Sarah Admin",
-      updateReason: "Content improvement",
-      lessonDetails: [
-        { id: 1, title: "Math Lesson", status: "Completed" },
-        { id: 2, title: "Science Lesson", status: "In Progress" },
-      ],
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      number: "987-654-3210",
-      createdBy: "Super Admin",
-      createdLesson: 8,
-      completedLesson: 8,
-      editedLesson: 3,
-      lastEdited: "2024-01-14",
-      updatedBy: "John Admin",
-      updateReason: "Grammar corrections",
-      lessonDetails: [
-        { id: 3, title: "History Lesson", status: "Completed" },
-        { id: 4, title: "English Lesson", status: "Pending Review" },
-      ],
-    },
-    {
-      id: 3,
-      name: "Mike Johnson",
-      number: "555-555-5555",
-      createdBy: "Content Manager",
-      createdLesson: 20,
-      completedLesson: 18,
-      editedLesson: 7,
-      lastEdited: "2024-01-13",
-      updatedBy: "Emily Editor",
-      updateReason: "Format standardization",
-      lessonDetails: [
-        { id: 5, title: "Geography Lesson", status: "Completed" },
-        { id: 6, title: "Art Lesson", status: "In Review" },
-      ],
-    },
-  ];
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
-  const handleRequestSort = (property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-  };
+  if (!hydrated) {
+    return null;
+  }
 
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  const handleSearchChange = (event) => {
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
     setPage(0);
   };
 
-  const descendingComparator = (a, b, orderBy) => {
-    if (b[orderBy] < a[orderBy]) return -1;
-    if (b[orderBy] > a[orderBy]) return 1;
-    return 0;
-  };
-
-  const getComparator = (order, orderBy) => {
-    return order === "desc"
-      ? (a, b) => descendingComparator(a, b, orderBy)
-      : (a, b) => -descendingComparator(a, b, orderBy);
-  };
-
-
-  const filteredData = mockData
-    .filter((row) =>
-      Object.values(row)
-        .join(" ")
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase())
-    )
-    .sort(getComparator(order, orderBy));
-
-  const handleEdit = (id) => {
-    console.log(`Edit item ${id}`);
-  };
-
-  const handleExpandRow = (id) => {
+  const handleExpandRow = (id: any) => {
     setExpandedRow(expandedRow === id ? null : id);
   };
 
   const headers = [
-    { id: "id", label: "ID", sortable: true },
-    { id: "word", label: "Word", sortable: true },
-    { id: "pronunciation", label: "Pronunciation", sortable: true },
-    { id: "meaning", label: "Meaning", sortable: true },
-    { id: "actions", label: "Actions", sortable: false },
+    { id: "id", label: "ID" },
+    { id: "word", label: "Word" },
+    { id: "pronunciation", label: "Pronunciation" },
+    { id: "meaning", label: "Meaning" },
+    { id: "actions", label: "Actions" },
   ];
 
   console.log(lessons);
@@ -183,20 +104,7 @@ const VocabularyTable = ({ lessons, children }: Props) => {
             <TableRow>
               <TableCell />
               {headers.map((header) => (
-                <TableCell
-                  key={header.id}
-                  sortDirection={orderBy === header.id ? order : false}>
-                  {header.sortable ? (
-                    <TableSortLabel
-                      active={orderBy === header.id}
-                      direction={orderBy === header.id ? order : "asc"}
-                      onClick={() => handleRequestSort(header.id)}>
-                      {header.label}
-                    </TableSortLabel>
-                  ) : (
-                    header.label
-                  )}
-                </TableCell>
+                <TableCell key={header.id}>{header.label}</TableCell>
               ))}
             </TableRow>
           </TableHead>
@@ -224,7 +132,8 @@ const VocabularyTable = ({ lessons, children }: Props) => {
                     <TableCell>
                       <Tooltip title="Edit">
                         <IconButton
-                          onClick={() => handleEdit(vocab.id)}
+                          LinkComponent={"a"}
+                          href={"/vocabulary/edit/" + vocab._id}
                           sx={{ color: "success.main" }}>
                           <FaEdit />
                         </IconButton>
@@ -272,7 +181,7 @@ const VocabularyTable = ({ lessons, children }: Props) => {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={filteredData.length}
+        count={lessons.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
@@ -282,4 +191,4 @@ const VocabularyTable = ({ lessons, children }: Props) => {
   );
 };
 
-export default VocabularyTable;
+export default dynamic(() => Promise.resolve(VocabularyTable), { ssr: false });

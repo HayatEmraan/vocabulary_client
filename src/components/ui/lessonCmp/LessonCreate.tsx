@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -17,8 +17,12 @@ import {
 } from "@mui/material";
 import { FiUpload } from "react-icons/fi";
 import { useRouter } from "next/navigation";
-import CtmSnackbar from "@/components/common/Snackbar";
 import { createLessonApi } from "@/services/adminApi/lesson.api";
+import dynamic from "next/dynamic";
+
+const CtmSnackbar = dynamic(() => import("@/components/common/Snackbar"), {
+  ssr: false,
+});
 
 const VisuallyHiddenInput = styled("input")`
   clip: rect(0 0 0 0);
@@ -39,18 +43,14 @@ const PreviewImage = styled("img")`
   margin: 16px 0;
 `;
 
-const LessonCreate = () => {
+const LessonCreate = ({ defaultValue }: { defaultValue?: any }) => {
   const [activeStep, setActiveStep] = useState(0);
-  const [formData, setFormData] = useState({
-    name: "",
-    number: "",
-    photo: null,
-    photoPreview: "",
-  });
+  const [formData, setFormData] = useState(defaultValue || {});
 
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<any>({
     name: false,
     number: false,
+    reason: false,
   });
 
   const navigate = useRouter();
@@ -62,12 +62,26 @@ const LessonCreate = () => {
     title: "",
   });
 
+  const [photo, setPhoto] = useState({
+    name: "",
+  });
+
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  if (!hydrated) {
+    return null;
+  }
+
   const handleNext = () => {
     if (activeStep === 0) {
-      const newErrors = {
+      const newErrors: any = {
         name: !formData.name,
         number: !formData.number || !/^\d+$/.test(formData.number),
       };
+
       setErrors(newErrors);
 
       if (Object.values(newErrors).some((error) => error)) {
@@ -98,6 +112,7 @@ const LessonCreate = () => {
   const handlePhotoUpload = (event: any) => {
     const file = event.target.files[0];
     if (file && file.type.startsWith("image/")) {
+      setPhoto(file);
       setFormData({
         ...formData,
         photo: file,
@@ -107,18 +122,20 @@ const LessonCreate = () => {
   };
 
   const handleSubmit = async () => {
-    console.log("Form submitted:", formData);
-
     const obj = {
       name: formData.name,
       number: Number(formData.number),
+      id: formData._id,
+      reason: formData.reason,
+      photoURL: formData.photoPreview,
     };
-
-    console.log(formData.photo);
 
     const formDataWithImage = new FormData();
     formDataWithImage.append("data", JSON.stringify(obj));
-    formDataWithImage.append("image", formData?.photo as any);
+
+    if (!formData?.reason) {
+      formDataWithImage.append("image", photo as any);
+    }
 
     const createLesson = await createLessonApi(formDataWithImage);
 
@@ -158,6 +175,16 @@ const LessonCreate = () => {
               helperText={errors.number && "Please enter a valid number"}
               fullWidth
             />
+            {defaultValue && (
+              <TextField
+                label="Updated Reason"
+                value={formData.reason}
+                onChange={handleInputChange("reason")}
+                error={errors.reason}
+                helperText={errors.reason && "Please enter a valid reason"}
+                fullWidth
+              />
+            )}
           </Box>
         );
       case 1:
@@ -198,6 +225,9 @@ const LessonCreate = () => {
               </Typography>
               <Typography>Name: {formData.name}</Typography>
               <Typography>Number: {formData.number}</Typography>
+              {defaultValue && (
+                <Typography>Updated Reason: {formData.reason}</Typography>
+              )}
               {formData.photoPreview && (
                 <PreviewImage
                   src={formData.photoPreview}
@@ -274,4 +304,4 @@ const LessonCreate = () => {
   );
 };
 
-export default LessonCreate;
+export default dynamic(() => Promise.resolve(LessonCreate), { ssr: false });

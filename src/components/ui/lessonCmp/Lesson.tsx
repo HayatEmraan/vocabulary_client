@@ -8,11 +8,14 @@ type Props = {
   name: string;
   number: number;
   updatedAt: string;
+  photoURL: string;
+  adminId: { name: string };
   _id: string;
 };
 
 const Lesson = ({ ls }: { ls: Props }) => {
   const { name, _id } = ls;
+
   return (
     <Box
       sx={{
@@ -27,20 +30,13 @@ const Lesson = ({ ls }: { ls: Props }) => {
           justifyContent: "space-between",
           alignItems: "center",
         }}>
-        <Image
-          src={
-            "https://cdn4.iconfinder.com/data/icons/logos-brands-in-colors/3000/figma-logo-512.png"
-          }
-          alt="figma"
-          width={50}
-          height={50}
-        />
+        <Image src={ls?.photoURL} alt="figma" width={50} height={50} />
         <Box>
           <Typography variant="h5" fontWeight={450}>
             {name}
           </Typography>
           <Typography color="#868686" lineHeight={1}>
-            by Hayat
+            by {ls?.adminId?.name}
           </Typography>
         </Box>
         <Box display="flex" gap={1} alignItems="center">

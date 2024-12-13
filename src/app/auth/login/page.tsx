@@ -1,7 +1,12 @@
-import LoginPage from "@/components/ui/authCmp/Login";
+"use client"
 import { Box } from "@mui/material";
+import dynamic from "next/dynamic";
 
-const Index = () => {
+const LoginPage = dynamic(() => import("@/components/ui/authCmp/Login"), {
+  ssr: false,
+});
+
+const Index =  () => {
   return (
     <Box>
       <LoginPage />

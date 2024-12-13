@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
-import axiosInstance from "../axiosInstance";
+
+import axiosInstance from "@/utils/axiosInstance";
 
 export async function meApi() {
   try {

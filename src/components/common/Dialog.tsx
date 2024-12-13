@@ -168,176 +168,11 @@
 // export default SelectPopup;
 
 import React, { useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Select,
-  MenuItem,
-  TextField,
-  Box,
-  FormControl,
-  InputLabel,
-  Typography,
-} from "@mui/material";
-import { styled } from "@mui/system";
+import { Button, Box } from "@mui/material";
+
 import { IoMdOpen } from "react-icons/io";
-
-const StyledFormControl = styled(FormControl)(({ theme }) => ({
-  minWidth: 200,
-  marginBottom: theme.spacing(2),
-}));
-
-// Confirmation Dialog Component
-const ConfirmationDialog = ({
-  open,
-  onClose,
-  onConfirm,
-  firstOption,
-  secondOption,
-  otherInput,
-}) => (
-  <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-    <DialogTitle>
-      <Typography variant="h6">Confirm Submission</Typography>
-    </DialogTitle>
-    <DialogContent>
-      <Typography>
-        Are you sure you want to submit the following details?
-      </Typography>
-      <Box sx={{ mt: 2 }}>
-        <Typography>
-          <strong>Category:</strong> {firstOption}
-        </Typography>
-        <Typography>
-          <strong>Level:</strong>{" "}
-          {secondOption === "others" ? otherInput : secondOption}
-        </Typography>
-      </Box>
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={onClose} color="error" variant="outlined">
-        Cancel
-      </Button>
-      <Button onClick={onConfirm} color="primary" variant="contained">
-        Confirm
-      </Button>
-    </DialogActions>
-  </Dialog>
-);
-
-// Selection Modal Component
-const SelectionModal = ({
-  open,
-  onClose,
-  firstOption,
-  secondOption,
-  otherInput,
-  onFirstOptionChange,
-  onSecondOptionChange,
-  onOtherInputChange,
-  onSubmit,
-}) => {
-  const firstOptions = [
-    "Web Development",
-    "Mobile Development",
-    "Cloud Computing",
-    "Data Science",
-  ];
-
-  const secondOptions = [
-    "Beginner",
-    "Intermediate",
-    "Advanced",
-    "Expert",
-    "others",
-  ];
-
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="sm"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: 2,
-          padding: 2,
-        },
-      }}>
-      <DialogTitle>
-        <Typography variant="h5" component="div" fontWeight="bold">
-          Select Your Preferences
-        </Typography>
-      </DialogTitle>
-
-      <DialogContent>
-        <StyledFormControl fullWidth>
-          <InputLabel>Select Category</InputLabel>
-          <Select
-            value={firstOption}
-            label="Select Category"
-            onChange={onFirstOptionChange}>
-            {firstOptions.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </StyledFormControl>
-
-        <StyledFormControl fullWidth>
-          <InputLabel>Select Level</InputLabel>
-          <Select
-            value={secondOption}
-            label="Select Level"
-            onChange={onSecondOptionChange}>
-            {secondOptions.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option.charAt(0).toUpperCase() + option.slice(1)}
-              </MenuItem>
-            ))}
-          </Select>
-        </StyledFormControl>
-
-        {secondOption === "others" && (
-          <TextField
-            fullWidth
-            label="Please specify"
-            variant="outlined"
-            value={otherInput}
-            onChange={onOtherInputChange}
-            error={secondOption === "others" && !otherInput}
-            helperText={
-              secondOption === "others" && !otherInput
-                ? "Please specify your level"
-                : ""
-            }
-            sx={{ mt: 2 }}
-          />
-        )}
-      </DialogContent>
-
-      <DialogActions sx={{ padding: 2 }}>
-        <Button onClick={onClose} variant="outlined" color="error">
-          Cancel
-        </Button>
-        <Button
-          onClick={onSubmit}
-          variant="contained"
-          disabled={
-            !firstOption ||
-            !secondOption ||
-            (secondOption === "others" && !otherInput)
-          }>
-          Submit
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
+import Modal from "./Modal";
+import Confirmation from "./Confirm";
 
 const SelectPopup = () => {
   const [open, setOpen] = useState(false);
@@ -392,7 +227,7 @@ const SelectPopup = () => {
         Open Selection Popup
       </Button>
 
-      <SelectionModal
+      <Modal
         open={open}
         onClose={handleClose}
         firstOption={firstOption}
@@ -404,7 +239,7 @@ const SelectPopup = () => {
         onSubmit={handleSubmit}
       />
 
-      <ConfirmationDialog
+      <Confirmation
         open={showConfirmation}
         onClose={handleCancelConfirmation}
         onConfirm={handleConfirm}

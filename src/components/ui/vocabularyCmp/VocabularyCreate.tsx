@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -24,24 +24,24 @@ import Quill from "quill";
 import CtmSnackbar from "@/components/common/Snackbar";
 import { useRouter } from "next/navigation";
 import { createVocabApi } from "@/services/adminApi/vacab.api";
+import dynamic from "next/dynamic";
 
-const VocabularyCreate = ({ lessons }: { lessons: any[] }) => {
+type Props = {
+  lessons: any[];
+  defaultValue?: any;
+};
+
+const VocabularyCreate = ({ lessons, defaultValue }: Props) => {
   const [activeStep, setActiveStep] = useState(0);
-  const [formData, setFormData] = useState({
-    word: "",
-    pronunciation: "",
-    meaning: "",
-    lesson: "",
-  });
+  const [formData, setFormData] = useState(defaultValue || {});
 
   const navigate = useRouter();
 
-  const [lesson, setLesson] = useState("");
-
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<any>({
     word: false,
     pronunciation: false,
     meaning: false,
+    reason: false,
   });
 
   const [alert, setAlert] = useState(false);
@@ -51,13 +51,26 @@ const VocabularyCreate = ({ lessons }: { lessons: any[] }) => {
     title: "",
   });
 
+  const editorRef = useRef<Quill | null>(null);
+  const [content, setContent] = useState<string>("");
+
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  if (!hydrated) {
+    return null;
+  }
+
   const handleNext = () => {
     if (activeStep === 0) {
-      const newErrors = {
+      const newErrors: any = {
         word: !formData.word,
         pronunciation: !formData.pronunciation,
         meaning: !formData.meaning,
       };
+
       setErrors(newErrors);
 
       if (Object.values(newErrors).some((error) => error)) {
@@ -72,10 +85,6 @@ const VocabularyCreate = ({ lessons }: { lessons: any[] }) => {
   };
 
   const handleInputChange = (field: string) => (event: any) => {
-    if (field === "lesson") {
-      setLesson(event.target.value);
-    }
-
     setFormData({
       ...formData,
       [field]: event.target.value,
@@ -92,9 +101,13 @@ const VocabularyCreate = ({ lessons }: { lessons: any[] }) => {
     const obj = {
       ...formData,
       useCase: content,
+      id: formData?._id,
     };
 
-    const createVocab = await createVocabApi(obj);
+    const createVocab = await createVocabApi({
+      ...obj,
+      lessonId: formData?.lesson,
+    });
 
     if (createVocab.success) {
       setAlert(true);
@@ -109,9 +122,6 @@ const VocabularyCreate = ({ lessons }: { lessons: any[] }) => {
     }, 1500);
   };
 
-  const editorRef = useRef<Quill | null>(null);
-  const [content, setContent] = useState<string>("");
-
   const handleTextChange = () => {
     const quill = editorRef.current;
     if (quill) {
@@ -121,8 +131,6 @@ const VocabularyCreate = ({ lessons }: { lessons: any[] }) => {
       console.error("Editor is not initialized.");
     }
   };
-
-  console.log(lessons);
 
   const getStepContent = (step: number) => {
     switch (step) {
@@ -153,6 +161,16 @@ const VocabularyCreate = ({ lessons }: { lessons: any[] }) => {
               helperText={errors.meaning && "Meaning is required"}
               fullWidth
             />
+            {defaultValue && (
+              <TextField
+                label="Updated Reason"
+                value={formData.reason}
+                onChange={handleInputChange("reason")}
+                error={errors.reason}
+                helperText={errors.reason && "Please enter a valid reason"}
+                fullWidth
+              />
+            )}
           </Box>
         );
       case 1:
@@ -186,7 +204,7 @@ const VocabularyCreate = ({ lessons }: { lessons: any[] }) => {
               <Typography>Word: {formData.word}</Typography>
               <Typography>Pronunciation: {formData.pronunciation}</Typography>
               <Typography>Meaning: {formData.meaning}</Typography>
-              <Typography>Lesson: {lesson}</Typography>
+              <Typography>LessonId: {formData.lesson}</Typography>
               <Typography variant="h6">Where to use this word?:</Typography>
               <Typography dangerouslySetInnerHTML={{ __html: content }} />
             </CardContent>
@@ -255,4 +273,4 @@ const VocabularyCreate = ({ lessons }: { lessons: any[] }) => {
   );
 };
 
-export default VocabularyCreate;
+export default dynamic(() => Promise.resolve(VocabularyCreate), { ssr: false });

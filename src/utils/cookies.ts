@@ -1,3 +1,5 @@
+"use server";
+
 import { cookies } from "next/headers";
 
 export async function getCookies() {
@@ -5,4 +7,10 @@ export async function getCookies() {
   const token = cookieStore.get("token")?.value;
   const iv = cookieStore.get("iv")?.value;
   return { token, iv };
+}
+
+export async function removeCookies() {
+  const cookieStore = await cookies();
+  cookieStore.delete("token");
+  cookieStore.delete("iv");
 }

@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -17,16 +18,19 @@ import {
   Grid,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import {
-  FaEdit,
-  FaTrash,
-  FaSort,
-  FaChevronDown,
-  FaChevronUp,
-} from "react-icons/fa";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import CtmSearch from "../../common/Search";
-import CtmButton from "../../common/Button";
+import { FaRegUser } from "react-icons/fa";
+
+import { MdOutlineAdminPanelSettings, MdOutlineBlock } from "react-icons/md";
+import { HiOutlineBookOpen } from "react-icons/hi";
+
 import moment from "moment";
+import Confirmation from "@/components/common/Confirm";
+import { userUpdateApi } from "@/services/adminApi/users.api";
+import CtmSnackbar from "@/components/common/Snackbar";
+import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 
 const StyledTableContainer = styled(TableContainer)(() => ({
   maxHeight: "70vh",
@@ -35,26 +39,8 @@ const StyledTableContainer = styled(TableContainer)(() => ({
   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
 }));
 
-const DetailBox = styled(Box)(() => ({
-  padding: "20px",
-  backgroundColor: "#f5f5f5",
-  borderRadius: "4px",
-}));
-
-type Props = {
-  _id: string;
-  name: string;
-  email: string;
-  password: string;
-  photoURL: string;
-  isActive: boolean;
-  role: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
 type userProps = {
-  users: Props[];
+  users: any[];
   children: React.ReactNode;
 };
 
@@ -63,148 +49,124 @@ const UserManagementTable = ({ users, children }: userProps) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedRow, setExpandedRow] = useState(null);
-  const [sortConfig, setSortConfig] = useState({
-    key: "id",
-    direction: "asc",
+
+  const [open, setOpen] = useState(false);
+  const [userInfo, setUserInfo] = useState<any>(null);
+
+  const [alert, setAlert] = useState(false);
+
+  const [snack, setSnack] = useState({
+    severity: "",
+    title: "",
   });
 
-  const mockUsers = [
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john.doe@example.com",
-      role: "Admin",
-      createdAt: "2023-01-15",
-      status: "Active",
-      description: "Senior system administrator with full access rights",
-      lastLogin: "2024-01-20 10:30 AM",
-      department: "IT Operations",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane.smith@example.com",
-      role: "User",
-      createdAt: "2023-02-20",
-      status: "Active",
-      description: "Content writer for marketing department",
-      lastLogin: "2024-01-19 03:45 PM",
-      department: "Marketing",
-    },
-    {
-      id: 3,
-      name: "Robert Johnson",
-      email: "robert.j@example.com",
-      role: "Manager",
-      createdAt: "2023-03-10",
-      status: "Away",
-      description: "Project manager for development team",
-      lastLogin: "2024-01-18 09:15 AM",
-      department: "Development",
-    },
-    {
-      id: 4,
-      name: "Emily Brown",
-      email: "emily.b@example.com",
-      role: "User",
-      createdAt: "2023-04-05",
-      status: "Inactive",
-      description: "Human resources coordinator",
-      lastLogin: "2024-01-15 02:20 PM",
-      department: "HR",
-    },
-    {
-      id: 5,
-      name: "Michael Wilson",
-      email: "michael.w@example.com",
-      role: "Admin",
-      createdAt: "2023-05-12",
-      status: "Active",
-      description: "Network security specialist",
-      lastLogin: "2024-01-20 11:45 AM",
-      department: "Security",
-    },
-    {
-      id: 6,
-      name: "Sarah Davis",
-      email: "sarah.d@example.com",
-      role: "User",
-      createdAt: "2023-06-18",
-      status: "Active",
-      description: "Financial analyst",
-      lastLogin: "2024-01-19 04:30 PM",
-      department: "Finance",
-    },
-    {
-      id: 7,
-      name: "James Miller",
-      email: "james.m@example.com",
-      role: "Manager",
-      createdAt: "2023-07-22",
-      status: "Active",
-      description: "Sales team leader",
-      lastLogin: "2024-01-20 09:00 AM",
-      department: "Sales",
-    },
-    {
-      id: 8,
-      name: "Lisa Anderson",
-      email: "lisa.a@example.com",
-      role: "User",
-      createdAt: "2023-08-30",
-      status: "Active",
-      description: "Customer support representative",
-      lastLogin: "2024-01-19 01:15 PM",
-      department: "Support",
-    },
-  ];
+  const navigate = useRouter();
 
-  const handleChangePage = (event, newPage) => {
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  if (!hydrated) {
+    return null;
+  }
+
+  const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  const handleSort = (key) => {
-    const direction =
-      sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc";
-    setSortConfig({ key, direction });
-  };
-
-  const handleSearch = (event) => {
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
     setPage(0);
   };
 
-  const handleEdit = (id) => {
-    console.log(`Editing user with ID: ${id}`);
+  const handleEdit = async (id: string, role: string) => {
+    if (role === "user") {
+      setUserInfo({
+        id,
+        role: "admin",
+      });
+    } else {
+      setUserInfo({
+        id,
+        role: "user",
+      });
+    }
+
+    setOpen(true);
   };
 
-  const handleDelete = (id) => {
-    console.log(`Deleting user with ID: ${id}`);
+  const handleClose = () => {
+    setOpen(false);
   };
 
-  const handleExpandRow = (id) => {
+  const handleConfirm = async () => {
+    if (userInfo?.role) {
+      const rs =
+        userInfo?.role === "admin" ? "promote to admin" : "demote to user";
+      const user = await userUpdateApi({
+        id: userInfo?.id,
+        role: userInfo?.role,
+        reason: rs,
+      });
+
+      if (user.success) {
+        setAlert(true);
+        setSnack({ severity: "success", title: user.message });
+      } else {
+        setAlert(true);
+        setSnack({
+          severity: "error",
+          title: user.message,
+        });
+      }
+    } else {
+      const rs = !userInfo?.isActive ? "blocked by admin" : "unblocked";
+      const user = await userUpdateApi({
+        id: userInfo?.id,
+        isActive: userInfo?.isActive,
+        reason: rs,
+      });
+
+      if (user.success) {
+        setAlert(true);
+        setSnack({ severity: "success", title: user.message });
+      } else {
+        setAlert(true);
+        setSnack({
+          severity: "error",
+          title: user.message,
+        });
+      }
+    }
+
+    setOpen(false);
+    navigate.refresh();
+  };
+
+  const handleBlock = (id: string, active: boolean) => {
+    setUserInfo({
+      id,
+      isActive: !active,
+    });
+
+    setOpen(true);
+  };
+
+  console.log(userInfo);
+
+  const handleExpandRow = (id: any) => {
     setExpandedRow(expandedRow === id ? null : id);
   };
 
-  const sortedAndFilteredData = mockUsers
-    .filter(
-      (user) =>
-        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (sortConfig.direction === "asc") {
-        return a[sortConfig.key] > b[sortConfig.key] ? 1 : -1;
-      }
-      return a[sortConfig.key] < b[sortConfig.key] ? 1 : -1;
-    });
-
-  const paginatedData = sortedAndFilteredData.slice(
+  const paginatedData = users.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
@@ -221,12 +183,10 @@ const UserManagementTable = ({ users, children }: userProps) => {
       <Box
         sx={{
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: "flex-end",
           alignItems: "center",
           mb: 2,
         }}>
-        <CtmButton />
-
         <CtmSearch
           searchQuery={searchQuery}
           handleSearch={handleSearch}
@@ -241,13 +201,9 @@ const UserManagementTable = ({ users, children }: userProps) => {
             <TableRow>
               <TableCell padding="checkbox" />
               {["id", "name", "email", "status", "role"].map((header) => (
-                <TableCell
-                  key={header}
-                  onClick={() => handleSort(header)}
-                  style={{ cursor: "pointer" }}>
+                <TableCell key={header}>
                   <Box sx={{ display: "flex", alignItems: "center" }}>
                     {header.charAt(0).toUpperCase() + header.slice(1)}
-                    <FaSort style={{ marginLeft: "5px" }} />
                   </Box>
                 </TableCell>
               ))}
@@ -255,7 +211,7 @@ const UserManagementTable = ({ users, children }: userProps) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map(({ userId, adminId, ...user }) => (
+            {paginatedData.map(({ userId, adminId, ...user }) => (
               <React.Fragment key={userId._id}>
                 <TableRow hover>
                   <TableCell padding="checkbox">
@@ -282,20 +238,34 @@ const UserManagementTable = ({ users, children }: userProps) => {
                   </TableCell>
                   <TableCell>{userId.role}</TableCell>
                   <TableCell>
-                    <Tooltip title="Edit user">
+                    <Tooltip
+                      title={`${
+                        userId?.role === "admin" ? "Make User" : "Make Admin"
+                      }`}>
                       <IconButton
-                        onClick={() => handleEdit(user._id)}
-                        aria-label={`Edit user ${user.name}`}
+                        onClick={() => handleEdit(userId._id, userId.role)}
+                        aria-label={`user ${user.name}`}
                         color="primary">
-                        <FaEdit />
+                        {userId?.role === "admin" ? (
+                          <MdOutlineAdminPanelSettings />
+                        ) : (
+                          <FaRegUser size={20} />
+                        )}
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Delete user">
+                    <Tooltip
+                      title={`${
+                        userId?.isActive ? "Block User" : "Unblock User"
+                      }`}>
                       <IconButton
-                        onClick={() => handleDelete(user._id)}
+                        onClick={() => handleBlock(userId._id, userId.isActive)}
                         aria-label={`Delete user ${user.name}`}
                         color="error">
-                        <FaTrash />
+                        {!userId?.isActive ? (
+                          <MdOutlineBlock />
+                        ) : (
+                          <HiOutlineBookOpen />
+                        )}
                       </IconButton>
                     </Tooltip>
                   </TableCell>
@@ -304,66 +274,6 @@ const UserManagementTable = ({ users, children }: userProps) => {
                   <TableCell
                     style={{ paddingBottom: 0, paddingTop: 0 }}
                     colSpan={6}>
-                    {/* <Collapse
-                      in={expandedRow === user._id}
-                      timeout="auto"
-                      unmountOnExit>
-                      <DetailBox>
-                        <Grid container spacing={2}>
-                          <Grid item xs={12} sm={6} md={3}>
-                            <Typography
-                              variant="subtitle2"
-                              color="textSecondary">
-                              Created At
-                            </Typography>
-                            <Typography variant="body1">
-                              {user.createdAt}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={12} sm={6} md={3}>
-                            <Typography
-                              variant="subtitle2"
-                              color="textSecondary">
-                              Status
-                            </Typography>
-                            <Typography variant="body1">
-                              {user.status}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={12} sm={6} md={3}>
-                            <Typography
-                              variant="subtitle2"
-                              color="textSecondary">
-                              Department
-                            </Typography>
-                            <Typography variant="body1">
-                              {user.department}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={12} sm={6} md={3}>
-                            <Typography
-                              variant="subtitle2"
-                              color="textSecondary">
-                              Last Login
-                            </Typography>
-                            <Typography variant="body1">
-                              {user.lastLogin}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={12}>
-                            <Typography
-                              variant="subtitle2"
-                              color="textSecondary">
-                              Description
-                            </Typography>
-                            <Typography variant="body1">
-                              {user.description}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </DetailBox>
-                    </Collapse> */}
-
                     <Collapse
                       in={expandedRow === user._id}
                       timeout="auto"
@@ -398,14 +308,23 @@ const UserManagementTable = ({ users, children }: userProps) => {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={sortedAndFilteredData.length}
+        count={users.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+
+      <Confirmation
+        open={open}
+        onClose={handleClose}
+        onConfirm={handleConfirm}
+      />
+      <CtmSnackbar snack={snack} open={alert} setOpen={setAlert} />
     </Box>
   );
 };
 
-export default UserManagementTable;
+export default dynamic(() => Promise.resolve(UserManagementTable), {
+  ssr: false,
+});

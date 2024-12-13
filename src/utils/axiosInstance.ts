@@ -1,6 +1,6 @@
 import { bgc } from "@/config";
 import axios from "axios";
-import { getCookies } from "./cookies";
+import { getCookies } from "../utils/cookies";
 
 const axiosInstance = axios.create({
   baseURL: bgc,

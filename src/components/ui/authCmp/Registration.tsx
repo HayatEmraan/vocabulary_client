@@ -79,6 +79,8 @@ const RegistrationPage = () => {
     title: "",
   });
 
+  console.log(photo);
+
   const validateForm = () => {
     const newErrors: errorType = {};
     if (!formData.name.trim()) {
