@@ -10,10 +10,13 @@ import BasicArea from "@/components/ui/homeCmp/YourStats";
 import { Box, Grid2, Typography } from "@mui/material";
 import { getAllLessonApi } from "@/services/commonApi/lesson.api";
 import { meApi } from "@/services/commonApi/me.api";
+import { getLessonStatsApi } from "@/services/userApi/lesson.api";
 
 const Home = async () => {
   const lessons = await getAllLessonApi();
   const me = await meApi();
+
+  const { data: stats } = await getLessonStatsApi();
 
   return (
     <>
@@ -34,8 +37,8 @@ const Home = async () => {
         </Grid2>
         <Grid2 size={5}>
           <Box display="flex" gap={2}>
-            <CourseBox number={3} title="Course Completed" />
-            <CourseBox number={4} title="Course Progress" />
+            <CourseBox number={stats?.vocab} title="Vocab Completed" />
+            <CourseBox number={stats?.lesson} title="Lesson Completed" />
           </Box>
 
           <Box mb={4}>

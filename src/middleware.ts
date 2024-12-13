@@ -14,29 +14,50 @@ export async function middleware(req: NextRequest) {
   const me = await meApi();
   const url = req.nextUrl.clone();
 
+  // If not authenticated, redirect to login
   if (!me?.success) {
-    return NextResponse.redirect(new URL("/auth/login", req.url));
+    if (url.pathname !== "/auth/login") {
+      return NextResponse.redirect(new URL("/auth/login", req.url));
+    }
+    return NextResponse.next();
   }
 
-  const { role } = me?.data;
+  const { role } = me.data;
 
+  // Redirect logged-in users away from auth pages
   if (["/auth/login", "/auth/register"].includes(url.pathname)) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
+  // Admin logic
   if (role === "admin") {
+    // Redirect to /users if at root
     if (url.pathname === "/") {
       return NextResponse.redirect(new URL("/users", req.url));
     }
 
-    if (!adminPaths.some((path) => url.pathname.match(path))) {
+    // Redirect admins away from non-admin paths
+    if (
+      !adminPaths.some((path) =>
+        new RegExp(`^${path.replace(":path*", ".*")}$`).test(url.pathname)
+      )
+    ) {
       return NextResponse.redirect(new URL("/users", req.url));
     }
-  } else if (role === "user") {
-    if (adminPaths.some((path) => url.pathname.match(path))) {
+  }
+
+  // User logic
+  if (role === "user") {
+    // Redirect users away from admin paths
+    if (
+      adminPaths.some((path) =>
+        new RegExp(`^${path.replace(":path*", ".*")}$`).test(url.pathname)
+      )
+    ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
 
+    // Redirect users to /lesson if not already there
     if (url.pathname !== "/lesson") {
       return NextResponse.redirect(new URL("/lesson", req.url));
     }
