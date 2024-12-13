@@ -1,6 +1,5 @@
 import { Box, Button, Typography } from "@mui/material";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
-import StarIcon from "@mui/icons-material/Star";
 import Image from "next/image";
 
 type Props = {
@@ -13,7 +12,7 @@ type Props = {
   _id: string;
 };
 
-const Lesson = ({ ls }: { ls: Props }) => {
+const Lesson = ({ ls, duration }: { ls: Props; duration: number }) => {
   const { name, _id } = ls;
 
   return (
@@ -41,11 +40,7 @@ const Lesson = ({ ls }: { ls: Props }) => {
         </Box>
         <Box display="flex" gap={1} alignItems="center">
           <AccessTimeFilledIcon />
-          <Typography variant="h6">30m</Typography>
-        </Box>
-        <Box display="flex" gap={1} alignItems="center">
-          <StarIcon />
-          <Typography variant="h6">4.9</Typography>
+          <Typography variant="h6">{duration}m</Typography>
         </Box>
         <Button
           LinkComponent={"a"}

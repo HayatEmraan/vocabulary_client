@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import {
   Container,
   Divider,
@@ -23,6 +23,7 @@ import VocabularyProgress from "./vocabularyCmp/VocabularyProgress";
 type Props = {
   children: React.ReactNode;
   vocab: any;
+  vocabId: string;
 };
 
 const ContentPaper = styled(Paper)(({ theme }) => ({
@@ -32,10 +33,9 @@ const ContentPaper = styled(Paper)(({ theme }) => ({
   overflowY: "auto",
 }));
 
-const ELearningVideoPage = ({ vocab, children }: Props) => {
+const ELearningVideoPage = ({ vocab, children, vocabId }: Props) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [activeSection, setActiveSection] = useState(0);
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -60,9 +60,8 @@ const ELearningVideoPage = ({ vocab, children }: Props) => {
                 <ListItem key={index} disablePadding>
                   <ListItemButton
                     LinkComponent={"a"}
-                    href={` ${section?.lessonId?._id}/${section._id}`}
-                    selected={activeSection === index}
-                    onClick={() => setActiveSection(index)}
+                    href={`/lesson/${section?.lessonId?._id}/${section._id}`}
+                    selected={vocabId === section._id}
                     sx={{
                       borderRadius: 1,
                       mb: 1,
@@ -83,7 +82,7 @@ const ELearningVideoPage = ({ vocab, children }: Props) => {
                       primary={section.word}
                       secondary={`Duration: ${section.duration}`}
                       primaryTypographyProps={{
-                        fontWeight: activeSection === index ? "bold" : "normal",
+                        fontWeight: vocabId === vocab?._id ? "bold" : "normal",
                       }}
                     />
                   </ListItemButton>

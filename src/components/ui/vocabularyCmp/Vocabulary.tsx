@@ -4,13 +4,45 @@
 import { Box, Button, Typography } from "@mui/material";
 import VocabularyCard from "./VocabularyCard";
 import { useRouter } from "next/navigation";
+import { completeVocabApi } from "@/services/userApi/vocab.api";
+import { completeLessonApi } from "@/services/userApi/lesson.api";
+import Confetti from "react-confetti";
+import React from "react";
 
-const Vocabulary = ({ vocab }: { vocab: any }) => {
+type Props = {
+  vocab: any;
+  nextId: any;
+  vocabId: string;
+};
+
+const Vocabulary = ({ vocab, nextId, vocabId }: Props) => {
   const navigate = useRouter();
 
   const handleBack = () => {
     navigate.back();
   };
+
+  const [complete, setComplete] = React.useState(false);
+
+  const handleNext = async () => {
+    const vocab = await completeVocabApi(nextId?._id);
+
+    if (vocab.success) {
+      navigate.push(`/lesson/${vocabId}/${nextId?._id}`);
+    }
+  };
+
+  const handleComplete = async (id: string) => {
+    const lesson = await completeLessonApi(id);
+
+    if (lesson.success) {
+      setComplete(true);
+      setTimeout(() => {
+        navigate.push("/lesson");
+      }, 1500);
+    }
+  };
+
   return (
     <Box>
       <Typography variant="h5">
@@ -27,22 +59,47 @@ const Vocabulary = ({ vocab }: { vocab: any }) => {
           onClick={handleBack}
           sx={{
             marginTop: 1,
-            backgroundColor: "#000",
+            bgcolor: "purple",
             "&:hover": { backgroundColor: "#333" },
           }}>
           Previous
         </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{
-            marginTop: 1,
-            backgroundColor: "#000",
-            "&:hover": { backgroundColor: "#333" },
-          }}>
-          Go Next
-        </Button>
+        {nextId && (
+          <Button
+            variant="contained"
+            onClick={handleNext}
+            sx={{
+              marginTop: 1,
+              bgcolor: "#1976D2",
+              "&:hover": { backgroundColor: "#1976D2" },
+            }}>
+            Next
+          </Button>
+        )}
+
+        {!nextId && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleComplete(vocabId)}
+            sx={{
+              marginTop: 1,
+              bgcolor: "green",
+              "&:hover": { backgroundColor: "#454" },
+            }}>
+            Complete
+          </Button>
+        )}
       </Box>
+
+      {complete && (
+        <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          recycle={false}
+          numberOfPieces={200}
+        />
+      )}
     </Box>
   );
 };

@@ -108,6 +108,14 @@ const LoginPage = () => {
     }
   };
 
+  const handleAdminLogin = () => {
+    setFormData({ email: "6a8wP@example.com", password: "12345678" });
+  };
+
+  const handleUserLogin = () => {
+    setFormData({ email: "BZVJt@example.com", password: "12345678" });
+  };
+
   return (
     <Container
       component="main"
@@ -157,6 +165,25 @@ const LoginPage = () => {
               />
             </Grid2>
           </Grid2>
+
+          <Box display={"flex"} justifyContent={"space-between"} gap={3}>
+            <Button
+              type="button"
+              onClick={handleAdminLogin}
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, bgcolor: "#1976D2" }}>
+              Admin Login
+            </Button>
+            <Button
+              type="button"
+              onClick={handleUserLogin}
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, bgcolor: "purple" }}>
+              User Login
+            </Button>
+          </Box>
           <Button
             type="submit"
             fullWidth

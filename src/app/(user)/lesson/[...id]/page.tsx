@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import ELearningVideoPage from "@/components/ui/Combine";
 import Vocabulary from "@/components/ui/vocabularyCmp/Vocabulary";
 import {
@@ -12,10 +13,18 @@ const Page = async ({ params }: { params: { id: string } }) => {
   const { data: vocab } = await getSingleVocabApi(id[1]);
   const lessonVocab = await getVocabByLessonApi(id[0]);
 
+  const findIdx = lessonVocab?.data.findIndex(
+    (item: any) => item._id === id[1]
+  );
+
   return (
     <Box>
-      <ELearningVideoPage vocab={lessonVocab?.data}>
-        <Vocabulary vocab={vocab} />
+      <ELearningVideoPage vocab={lessonVocab?.data} vocabId={id[1]}>
+        <Vocabulary
+          vocabId={id[0]}
+          vocab={vocab}
+          nextId={lessonVocab?.data[findIdx + 1]}
+        />
       </ELearningVideoPage>
     </Box>
   );

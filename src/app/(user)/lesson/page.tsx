@@ -3,7 +3,7 @@ import CourseBox from "@/components/ui/homeCmp/CourseBox";
 import Greetings from "@/components/ui/homeCmp/Greetings";
 import HaltCourse from "@/components/ui/homeCmp/HaltCourse";
 import Lesson from "@/components/ui/lessonCmp/Lesson";
-import PaginationLink from "@/components/ui/Pagination";
+// import PaginationLink from "@/components/ui/Pagination";
 import PremiumCard from "@/components/ui/homeCmp/PremiumCard";
 import BasicArea from "@/components/ui/homeCmp/YourStats";
 // import Search from "@/components/ui/Search";
@@ -13,11 +13,11 @@ import { meApi } from "@/services/commonApi/me.api";
 import { getLessonStatsApi } from "@/services/userApi/lesson.api";
 
 const Home = async () => {
-  const lessons = await getAllLessonApi();
+  const { data: ls } = await getAllLessonApi();
   const me = await meApi();
 
   const { data: stats } = await getLessonStatsApi();
-
+  const { lessons, duration } = ls;
   return (
     <>
       {/* <Search /> */}
@@ -29,10 +29,10 @@ const Home = async () => {
             All Lessons
           </Typography>
           <Box display="flex" flexDirection="column" gap={2} mt={2}>
-            {lessons?.data?.map((lesson: any) => (
-              <Lesson ls={lesson} key={lesson._id} />
+            {lessons?.map((lesson: any) => (
+              <Lesson ls={lesson} key={lesson._id} duration={duration} />
             ))}
-            <PaginationLink />
+            {/* <PaginationLink /> */}
           </Box>
         </Grid2>
         <Grid2 size={5}>
@@ -52,7 +52,7 @@ const Home = async () => {
                 mt: 2,
                 borderRadius: 1.5,
               }}>
-              <BasicArea />
+              <BasicArea stats={stats?.groupBy} />
             </Box>
           </Box>
 
