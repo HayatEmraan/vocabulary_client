@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { meApi } from "./services/commonApi/me.api";
 
-const paths = [
+const adminPaths = [
   "/lessons",
   "/lessons/:path*",
   "/users",
@@ -20,21 +20,25 @@ export async function middleware(req: NextRequest) {
 
   const { role } = me?.data;
 
-  if (role) {
-    if (url.pathname === "/auth/login" || url.pathname === "/auth/register") {
-      return NextResponse.redirect(new URL("/", req.url));
-    }
-  }
-
-  if (role === "user") {
-    if (url.pathname !== "/lesson") {
-      return NextResponse.redirect(new URL("/lesson", req.url));
-    }
+  if (["/auth/login", "/auth/register"].includes(url.pathname)) {
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   if (role === "admin") {
-    if (!paths.some((path) => url.pathname.match(path))) {
-      return NextResponse.redirect(new URL("/auth/login", req.url));
+    if (url.pathname === "/") {
+      return NextResponse.redirect(new URL("/users", req.url));
+    }
+
+    if (!adminPaths.some((path) => url.pathname.match(path))) {
+      return NextResponse.redirect(new URL("/users", req.url));
+    }
+  } else if (role === "user") {
+    if (adminPaths.some((path) => url.pathname.match(path))) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+
+    if (url.pathname !== "/lesson") {
+      return NextResponse.redirect(new URL("/lesson", req.url));
     }
   }
 
@@ -47,5 +51,8 @@ export const config = {
     "/lesson",
     "/users/:path*",
     "/vocabulary/:path*",
+    "/auth/login",
+    "/auth/register",
+    "/",
   ],
 };

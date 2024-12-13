@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState } from "react";
@@ -17,8 +18,12 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { FaBook, FaCheckCircle } from "react-icons/fa";
-import Vocabulary from "./vocabularyCmp/Vocabulary";
 import VocabularyProgress from "./vocabularyCmp/VocabularyProgress";
+
+type Props = {
+  children: React.ReactNode;
+  vocab: any;
+};
 
 const ContentPaper = styled(Paper)(({ theme }) => ({
   height: "100%",
@@ -27,44 +32,16 @@ const ContentPaper = styled(Paper)(({ theme }) => ({
   overflowY: "auto",
 }));
 
-const ELearningVideoPage = () => {
+const ELearningVideoPage = ({ vocab, children }: Props) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [activeSection, setActiveSection] = useState(0);
-
-  const courseContent = [
-    {
-      title: "Introduction to the Course",
-      duration: "10:00",
-      completed: true,
-    },
-    {
-      title: "Basic Concepts",
-      duration: "15:30",
-      completed: true,
-    },
-    {
-      title: "Advanced Topics",
-      duration: "20:15",
-      completed: false,
-    },
-    {
-      title: "Practical Examples",
-      duration: "25:45",
-      completed: false,
-    },
-    {
-      title: "Final Project Overview",
-      duration: "18:20",
-      completed: false,
-    },
-  ];
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <Grid container spacing={3} sx={{ height: "100%" }}>
         <Grid item xs={12} md={8}>
-          <Vocabulary />
+          {children}
         </Grid>
 
         <Grid item xs={12} md={4} sx={{ height: isMobile ? "auto" : "100%" }}>
@@ -79,9 +56,11 @@ const ELearningVideoPage = () => {
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <List>
-              {courseContent.map((section, index) => (
+              {vocab.map((section: any, index: number) => (
                 <ListItem key={index} disablePadding>
                   <ListItemButton
+                    LinkComponent={"a"}
+                    href={` ${section?.lessonId?._id}/${section._id}`}
                     selected={activeSection === index}
                     onClick={() => setActiveSection(index)}
                     sx={{
@@ -101,7 +80,7 @@ const ELearningVideoPage = () => {
                       />
                     </ListItemIcon>
                     <ListItemText
-                      primary={section.title}
+                      primary={section.word}
                       secondary={`Duration: ${section.duration}`}
                       primaryTypographyProps={{
                         fontWeight: activeSection === index ? "bold" : "normal",

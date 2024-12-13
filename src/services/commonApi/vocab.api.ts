@@ -18,3 +18,11 @@ export async function getSingleVocabApi(id: string) {
     return error?.response?.data;
   }
 }
+export async function getVocabByLessonApi(id: string) {
+  try {
+    const res = await axiosInstance.get("vocab/vocab-by-lesson/" + id);
+    return res.data;
+  } catch (error: any) {
+    return error?.response?.data;
+  }
+}

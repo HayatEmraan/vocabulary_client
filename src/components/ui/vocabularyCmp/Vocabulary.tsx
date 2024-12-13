@@ -1,19 +1,30 @@
-import { Box, Button, Typography } from "@mui/material";
-import RecipeReviewCard from "./VocabularyCard";
+"use client";
 
-const Vocabulary = () => {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Box, Button, Typography } from "@mui/material";
+import VocabularyCard from "./VocabularyCard";
+import { useRouter } from "next/navigation";
+
+const Vocabulary = ({ vocab }: { vocab: any }) => {
+  const navigate = useRouter();
+
+  const handleBack = () => {
+    navigate.back();
+  };
   return (
     <Box>
       <Typography variant="h5">
-        82-8 Starting of a new Journey with special message
+        {vocab?.lessonId?.number} - {vocab?.word}
+        message
       </Typography>
 
-      <RecipeReviewCard />
+      <VocabularyCard vocab={vocab} />
 
       <Box display="flex" gap={2} justifyContent={"space-between"}>
         <Button
           variant="contained"
           color="primary"
+          onClick={handleBack}
           sx={{
             marginTop: 1,
             backgroundColor: "#000",

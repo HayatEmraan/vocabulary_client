@@ -35,32 +35,22 @@ const WordContainer = styled(Box)({
   gap: "10px",
 });
 
-const JapaneseTimeline = () => {
-  const words = [
-    {
-      japanese: "こんにちは",
-      pronunciation: "Konnichiwa",
-      meaning: "Hello",
-    },
-  ];
-
+const JapaneseTimeline = ({ word, pronunciation, meaning }) => {
   return (
     <TimelineContainer>
-      {words.map((word, index) => (
-        <TimelineItem key={index} elevation={3}>
-          <WordContainer>
-            <Typography
-              variant="h4"
-              sx={{ color: "#1976d2", fontWeight: "bold" }}>
-              {word.japanese}
-            </Typography>
-            <Typography variant="h5" sx={{ color: "#666" }}>
-              {word.pronunciation}
-            </Typography>
-            <Typography variant="h6">{word.meaning}</Typography>
-          </WordContainer>
-        </TimelineItem>
-      ))}
+      <TimelineItem elevation={3}>
+        <WordContainer>
+          <Typography
+            variant="h4"
+            sx={{ color: "#1976d2", fontWeight: "bold" }}>
+            {word}
+          </Typography>
+          <Typography variant="h5" sx={{ color: "#666" }}>
+            {pronunciation}
+          </Typography>
+          <Typography variant="h6">{meaning}</Typography>
+        </WordContainer>
+      </TimelineItem>
     </TimelineContainer>
   );
 };

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import * as React from "react";
 import { styled } from "@mui/material/styles";
@@ -13,6 +14,7 @@ import { red } from "@mui/material/colors";
 import ShareIcon from "@mui/icons-material/Share";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import JapaneseTimeline from "../Japanese";
+import moment from "moment";
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -42,7 +44,7 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
   ],
 }));
 
-export default function RecipeReviewCard() {
+const VocabularyCard = ({ vocab }: { vocab: any }) => {
   const [expanded, setExpanded] = React.useState(false);
 
   const handleExpandClick = () => {
@@ -54,13 +56,17 @@ export default function RecipeReviewCard() {
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            R
+            {vocab?.adminId?.name[0]}
           </Avatar>
         }
-        title="Shrimp and Chorizo Paella"
-        subheader="September 14, 2016"
+        title={vocab?.adminId?.name}
+        subheader={moment(vocab?.createdAt).format("YYYY-MM-DD")}
       />
-      <JapaneseTimeline />
+      <JapaneseTimeline
+        word={vocab?.word}
+        pronunciation={vocab?.pronunciation}
+        meaning={vocab?.meaning}
+      />
       <CardActions disableSpacing>
         <IconButton aria-label="share">
           <ShareIcon />
@@ -75,35 +81,11 @@ export default function RecipeReviewCard() {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          <Typography sx={{ marginBottom: 2 }}>Method:</Typography>
-          <Typography sx={{ marginBottom: 2 }}>
-            Heat 1/2 cup of the broth in a pot until simmering, add saffron and
-            set aside for 10 minutes.
-          </Typography>
-          <Typography sx={{ marginBottom: 2 }}>
-            Heat oil in a (14- to 16-inch) paella pan or a large, deep skillet
-            over medium-high heat. Add chicken, shrimp and chorizo, and cook,
-            stirring occasionally until lightly browned, 6 to 8 minutes.
-            Transfer shrimp to a large plate and set aside, leaving chicken and
-            chorizo in the pan. Add pimentón, bay leaves, garlic, tomatoes,
-            onion, salt and pepper, and cook, stirring often until thickened and
-            fragrant, about 10 minutes. Add saffron broth and remaining 4 1/2
-            cups chicken broth; bring to a boil.
-          </Typography>
-          <Typography sx={{ marginBottom: 2 }}>
-            Add rice and stir very gently to distribute. Top with artichokes and
-            peppers, and cook without stirring, until most of the liquid is
-            absorbed, 15 to 18 minutes. Reduce heat to medium-low, add reserved
-            shrimp and mussels, tucking them down into the rice, and cook again
-            without stirring, until mussels have opened and rice is just tender,
-            5 to 7 minutes more. (Discard any mussels that don&apos;t open.)
-          </Typography>
-          <Typography>
-            Set aside off of the heat to let rest for 10 minutes, and then
-            serve.
-          </Typography>
+          <Typography dangerouslySetInnerHTML={{ __html: vocab?.useCase }} />
         </CardContent>
       </Collapse>
     </Card>
   );
-}
+};
+
+export default VocabularyCard;
