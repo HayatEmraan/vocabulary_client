@@ -21,9 +21,8 @@ import {
 import { FaEdit, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import moment from "moment";
 import dynamic from "next/dynamic";
-
-const CtmSearch = dynamic(() => import("../../common/Search"), { ssr: false });
-const CtmButton = dynamic(() => import("../../common/Button"), { ssr: false });
+import CtmButton from "@/components/common/Button";
+import CtmSearch from "@/components/common/Search";
 
 type Props = {
   lessons: any[];
@@ -127,8 +126,8 @@ const VocabularyTable = ({ lessons, children }: Props) => {
                     </TableCell>
                     <TableCell>{vocab._id?.slice(0, 5)}</TableCell>
                     <TableCell>{vocab.word}</TableCell>
-                    <TableCell>{vocab.meaning}</TableCell>
                     <TableCell>{vocab.pronunciation}</TableCell>
+                    <TableCell>{vocab.meaning}</TableCell>
                     <TableCell>
                       <Tooltip title="Edit">
                         <IconButton

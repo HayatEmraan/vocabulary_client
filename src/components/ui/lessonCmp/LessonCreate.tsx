@@ -62,9 +62,7 @@ const LessonCreate = ({ defaultValue }: { defaultValue?: any }) => {
     title: "",
   });
 
-  const [photo, setPhoto] = useState({
-    name: "",
-  });
+  const [photo, setPhoto] = useState();
 
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
@@ -81,6 +79,10 @@ const LessonCreate = ({ defaultValue }: { defaultValue?: any }) => {
         name: !formData.name,
         number: !formData.number || !/^\d+$/.test(formData.number),
       };
+
+      if (formData?._id && !formData.reason) {
+        newErrors.reason = true;
+      }
 
       setErrors(newErrors);
 
@@ -127,21 +129,19 @@ const LessonCreate = ({ defaultValue }: { defaultValue?: any }) => {
       number: Number(formData.number),
       id: formData._id,
       reason: formData.reason,
-      photoURL: formData.photoPreview,
+      photoURL: formData.photo,
     };
 
     const formDataWithImage = new FormData();
     formDataWithImage.append("data", JSON.stringify(obj));
 
-    if (!formData?.reason) {
+    if (photo) {
       formDataWithImage.append("image", photo as any);
     }
 
     const createLesson = await createLessonApi(formDataWithImage);
 
-    console.log(createLesson);
-
-    if (createLesson.success) {
+    if (createLesson?.success) {
       setAlert(true);
       setSnack({ severity: "success", title: createLesson.message });
     } else {
@@ -150,7 +150,7 @@ const LessonCreate = ({ defaultValue }: { defaultValue?: any }) => {
     }
 
     setTimeout(() => {
-      navigate.push("/auth/login");
+      navigate.push("/lessons");
     }, 1500);
   };
 

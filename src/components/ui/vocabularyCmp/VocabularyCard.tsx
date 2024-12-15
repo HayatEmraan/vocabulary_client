@@ -81,7 +81,10 @@ const VocabularyCard = ({ vocab }: { vocab: any }) => {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          <Typography dangerouslySetInnerHTML={{ __html: vocab?.useCase }} />
+          <Typography
+            mx={2}
+            dangerouslySetInnerHTML={{ __html: vocab?.useCase }}
+          />
         </CardContent>
       </Collapse>
     </Card>

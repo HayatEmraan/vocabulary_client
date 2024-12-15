@@ -5,6 +5,7 @@ import {
   getSingleVocabApi,
   getVocabByLessonApi,
 } from "@/services/commonApi/vocab.api";
+import { completeVocabApi } from "@/services/userApi/vocab.api";
 import { Box } from "@mui/material";
 
 const Page = async ({ params }: { params: { id: string } }) => {
@@ -16,6 +17,8 @@ const Page = async ({ params }: { params: { id: string } }) => {
   const findIdx = lessonVocab?.data.findIndex(
     (item: any) => item._id === id[1]
   );
+
+  await completeVocabApi(id[1]);
 
   return (
     <Box>

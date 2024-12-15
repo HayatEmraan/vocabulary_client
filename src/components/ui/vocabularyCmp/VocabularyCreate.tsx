@@ -42,6 +42,7 @@ const VocabularyCreate = ({ lessons, defaultValue }: Props) => {
     pronunciation: false,
     meaning: false,
     reason: false,
+    duration: false,
   });
 
   const [alert, setAlert] = useState(false);
@@ -69,7 +70,12 @@ const VocabularyCreate = ({ lessons, defaultValue }: Props) => {
         word: !formData.word,
         pronunciation: !formData.pronunciation,
         meaning: !formData.meaning,
+        duration: !formData.duration,
       };
+
+      if (formData?._id && !formData.reason) {
+        newErrors.reason = true;
+      }
 
       setErrors(newErrors);
 
@@ -102,6 +108,7 @@ const VocabularyCreate = ({ lessons, defaultValue }: Props) => {
       ...formData,
       useCase: content,
       id: formData?._id,
+      duration: Number(formData?.duration),
     };
 
     const createVocab = await createVocabApi({
@@ -109,7 +116,7 @@ const VocabularyCreate = ({ lessons, defaultValue }: Props) => {
       lessonId: formData?.lesson,
     });
 
-    if (createVocab.success) {
+    if (createVocab?.success) {
       setAlert(true);
       setSnack({ severity: "success", title: createVocab.message });
     } else {
@@ -118,7 +125,7 @@ const VocabularyCreate = ({ lessons, defaultValue }: Props) => {
     }
 
     setTimeout(() => {
-      navigate.push("/auth/login");
+      navigate.push("/vocabulary");
     }, 1500);
   };
 
@@ -159,6 +166,15 @@ const VocabularyCreate = ({ lessons, defaultValue }: Props) => {
               onChange={handleInputChange("meaning")}
               error={errors.meaning}
               helperText={errors.meaning && "Meaning is required"}
+              fullWidth
+            />
+
+            <TextField
+              label="Duration"
+              value={formData.duration}
+              onChange={handleInputChange("duration")}
+              error={errors.duration}
+              helperText={errors.duration && "Duration is required"}
               fullWidth
             />
             {defaultValue && (
@@ -206,7 +222,10 @@ const VocabularyCreate = ({ lessons, defaultValue }: Props) => {
               <Typography>Meaning: {formData.meaning}</Typography>
               <Typography>LessonId: {formData.lesson}</Typography>
               <Typography variant="h6">Where to use this word?:</Typography>
-              <Typography dangerouslySetInnerHTML={{ __html: content }} />
+              <Typography
+                mx={2}
+                dangerouslySetInnerHTML={{ __html: content }}
+              />
             </CardContent>
           </Card>
         );

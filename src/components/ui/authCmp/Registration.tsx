@@ -11,6 +11,7 @@ import {
   FormHelperText,
   Avatar,
   Grid2,
+  CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { FaUser, FaEnvelope, FaLock, FaCloudUploadAlt } from "react-icons/fa";
@@ -60,6 +61,8 @@ const RegistrationPage = () => {
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
   const navigate = useRouter();
 
   const [errors, setErrors] = useState<errorType>({
@@ -78,8 +81,6 @@ const RegistrationPage = () => {
     severity: "",
     title: "",
   });
-
-  console.log(photo);
 
   const validateForm = () => {
     const newErrors: errorType = {};
@@ -124,8 +125,8 @@ const RegistrationPage = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     const validationErrors = validateForm();
-    console.log("btn clicked");
     if (Object.keys(validationErrors).length === 0) {
       const formDataWithImage = new FormData();
       formDataWithImage.append("data", JSON.stringify(formData));
@@ -133,11 +134,12 @@ const RegistrationPage = () => {
 
       const userRegister = await registerApi(formDataWithImage);
 
-      if (userRegister.success) {
+      if (userRegister?.success) {
         setAlert(true);
         setSnack({ severity: "success", title: userRegister.message });
       } else {
         setAlert(true);
+        setLoading(false);
         return setSnack({ severity: "error", title: userRegister.message });
       }
 
@@ -147,6 +149,8 @@ const RegistrationPage = () => {
     } else {
       setErrors(validationErrors);
     }
+
+    setLoading(false);
   };
 
   return (
@@ -235,8 +239,13 @@ const RegistrationPage = () => {
             type="submit"
             fullWidth
             variant="contained"
+            disabled={loading}
             sx={{ mt: 3, mb: 2 }}>
-            Register
+            {loading ? (
+              <CircularProgress color="inherit" size={24} />
+            ) : (
+              "Register"
+            )}
           </Button>
 
           <Typography variant="body2" align="center">

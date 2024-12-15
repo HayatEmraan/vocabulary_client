@@ -9,7 +9,10 @@ const Greetings = ({ user }: { user: any }) => {
       sx={{
         bgcolor: "#e4e4e4",
         p: 3.5,
-        px: 4,
+        px: {
+          xs: 2,
+          md: 4,
+        },
         borderRadius: 1.5,
         position: "relative",
       }}>
@@ -23,7 +26,15 @@ const Greetings = ({ user }: { user: any }) => {
         it&apos;s good to see you again
       </Typography>
 
-      <Box sx={{ position: "absolute", top: -40, right: 0 }}>
+      <Box
+        sx={{
+          position: "absolute",
+          top: -40,
+          right: {
+            xs: -8,
+            md: 0,
+          },
+        }}>
         <Image src={helloGreet} alt="hello" width={200} height={170} />
       </Box>
     </Box>

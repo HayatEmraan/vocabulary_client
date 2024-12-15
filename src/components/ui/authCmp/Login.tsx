@@ -10,6 +10,7 @@ import {
   Paper,
   Grid2,
   Avatar,
+  CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { FaEnvelope, FaLock } from "react-icons/fa";
@@ -44,6 +45,8 @@ const LoginPage = () => {
     email: "",
     password: "",
   });
+
+  const [loading, setLoading] = useState(false);
 
   const navigate = useRouter();
 
@@ -87,16 +90,17 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length === 0) {
       const userLogin = await loginApi(formData);
 
-      console.log(userLogin);
-      if (userLogin.success) {
+      if (userLogin?.success) {
         setAlert(true);
         setSnack({ severity: "success", title: userLogin.message });
       } else {
         setAlert(true);
+        setLoading(false);
         return setSnack({ severity: "error", title: userLogin.message });
       }
 
@@ -106,6 +110,8 @@ const LoginPage = () => {
     } else {
       setErrors(validationErrors);
     }
+
+    setLoading(false);
   };
 
   const handleAdminLogin = () => {
@@ -188,8 +194,9 @@ const LoginPage = () => {
             type="submit"
             fullWidth
             variant="contained"
+            disabled={loading}
             sx={{ mt: 3, mb: 2 }}>
-            Login
+            {loading ? <CircularProgress color="inherit" size={24} /> : "Login"}
           </Button>
 
           <Typography variant="body2" align="center">

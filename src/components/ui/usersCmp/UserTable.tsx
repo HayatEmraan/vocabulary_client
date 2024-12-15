@@ -117,7 +117,7 @@ const UserManagementTable = ({ users, children }: userProps) => {
         reason: rs,
       });
 
-      if (user.success) {
+      if (user?.success) {
         setAlert(true);
         setSnack({ severity: "success", title: user.message });
       } else {
@@ -135,7 +135,7 @@ const UserManagementTable = ({ users, children }: userProps) => {
         reason: rs,
       });
 
-      if (user.success) {
+      if (user?.success) {
         setAlert(true);
         setSnack({ severity: "success", title: user.message });
       } else {
@@ -159,8 +159,6 @@ const UserManagementTable = ({ users, children }: userProps) => {
 
     setOpen(true);
   };
-
-  console.log(userInfo);
 
   const handleExpandRow = (id: any) => {
     setExpandedRow(expandedRow === id ? null : id);
@@ -212,39 +210,39 @@ const UserManagementTable = ({ users, children }: userProps) => {
           </TableHead>
           <TableBody>
             {paginatedData.map(({ userId, adminId, ...user }) => (
-              <React.Fragment key={userId._id}>
+              <React.Fragment key={user?._id}>
                 <TableRow hover>
                   <TableCell padding="checkbox">
                     <IconButton
                       size="small"
-                      onClick={() => handleExpandRow(user._id)}
+                      onClick={() => handleExpandRow(user?._id)}
                       aria-label="expand row">
-                      {expandedRow === user._id ? (
+                      {expandedRow === user?._id ? (
                         <FaChevronUp />
                       ) : (
                         <FaChevronDown />
                       )}
                     </IconButton>
                   </TableCell>
-                  <TableCell>{userId._id?.slice(0, 5)}</TableCell>
-                  <TableCell>{userId.name}</TableCell>
-                  <TableCell>{userId.email}</TableCell>
+                  <TableCell>{userId?._id?.slice(0, 5)}</TableCell>
+                  <TableCell>{userId?.name}</TableCell>
+                  <TableCell>{userId?.email}</TableCell>
                   <TableCell
                     sx={{
-                      color: userId.isActive ? "green" : "red",
+                      color: userId?.isActive ? "green" : "red",
                       fontWeight: "bold",
                     }}>
-                    {userId.isActive ? "Active" : "Blocked"}
+                    {userId?.isActive ? "Active" : "Blocked"}
                   </TableCell>
-                  <TableCell>{userId.role}</TableCell>
+                  <TableCell>{userId?.role}</TableCell>
                   <TableCell>
                     <Tooltip
                       title={`${
                         userId?.role === "admin" ? "Make User" : "Make Admin"
                       }`}>
                       <IconButton
-                        onClick={() => handleEdit(userId._id, userId.role)}
-                        aria-label={`user ${user.name}`}
+                        onClick={() => handleEdit(userId?._id, userId?.role)}
+                        aria-label={`user ${user?.name}`}
                         color="primary">
                         {userId?.role === "admin" ? (
                           <MdOutlineAdminPanelSettings />
@@ -258,8 +256,10 @@ const UserManagementTable = ({ users, children }: userProps) => {
                         userId?.isActive ? "Block User" : "Unblock User"
                       }`}>
                       <IconButton
-                        onClick={() => handleBlock(userId._id, userId.isActive)}
-                        aria-label={`Delete user ${user.name}`}
+                        onClick={() =>
+                          handleBlock(userId?._id, userId?.isActive)
+                        }
+                        aria-label={`Delete user ${user?.name}`}
                         color="error">
                         {!userId?.isActive ? (
                           <MdOutlineBlock />
@@ -275,7 +275,7 @@ const UserManagementTable = ({ users, children }: userProps) => {
                     style={{ paddingBottom: 0, paddingTop: 0 }}
                     colSpan={6}>
                     <Collapse
-                      in={expandedRow === user._id}
+                      in={expandedRow === user?._id}
                       timeout="auto"
                       unmountOnExit>
                       <Box sx={{ margin: 2 }}>
@@ -286,13 +286,13 @@ const UserManagementTable = ({ users, children }: userProps) => {
                           <Grid item xs={12} md={6}>
                             <Typography variant="subtitle2">
                               Last Edited:{" "}
-                              {moment(user.updatedAt).format("LLL")}
+                              {moment(user?.updatedAt).format("LLL")}
                             </Typography>
                             <Typography variant="subtitle2">
                               Updated By: {adminId?.name ?? "N/A"}
                             </Typography>
                             <Typography variant="subtitle2">
-                              Update Reason: {user.reason}
+                              Update Reason: {user?.reason}
                             </Typography>
                           </Grid>
                         </Grid>

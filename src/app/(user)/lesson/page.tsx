@@ -17,7 +17,7 @@ const Home = async () => {
 
   try {
     const lessonsResponse = await getAllLessonApi();
-    ls = lessonsResponse?.data || { lessons: [], duration: 0 };
+    ls = lessonsResponse?.data || [];
 
     const meResponse = await meApi();
     me = meResponse?.data || null;
@@ -25,25 +25,28 @@ const Home = async () => {
     const statsResponse = await getLessonStatsApi();
     stats = statsResponse?.data || { vocab: 0, lesson: 0, groupBy: [] };
   } catch {
-    ls = { lessons: [], duration: 0 };
+    ls = [];
     me = null;
     stats = { vocab: 0, lesson: 0, groupBy: [] };
   }
 
-  const { lessons, duration } = ls;
   return (
     <>
       {/* <Search /> */}
       <Grid2 container spacing={2}>
         <Grid2 size={{ xs: 12, md: 7 }} sx={{ mt: { xs: 3, md: 1 } }}>
-          <Greetings user={me?.data} />
+          <Greetings user={me} />
           <HaltCourse />
           <Typography variant="h5" fontWeight={450} mt={4}>
             All Lessons
           </Typography>
           <Box display="flex" flexDirection="column" gap={2} mt={2}>
-            {lessons?.map((lesson: any) => (
-              <Lesson ls={lesson} key={lesson._id} duration={duration} />
+            {ls?.map((lesson: any) => (
+              <Lesson
+                ls={lesson}
+                key={lesson?._id}
+                duration={lesson?.duration}
+              />
             ))}
             {/* <PaginationLink /> */}
           </Box>

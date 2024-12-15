@@ -16,7 +16,9 @@ export async function middleware(req: NextRequest) {
 
   // If not authenticated, redirect to login
   if (!me?.success) {
-    if (url.pathname !== "/auth/login") {
+    if (url.pathname === "/auth/register") {
+      return NextResponse.next();
+    } else if (url.pathname !== "/auth/login") {
       return NextResponse.redirect(new URL("/auth/login", req.url));
     }
     return NextResponse.next();

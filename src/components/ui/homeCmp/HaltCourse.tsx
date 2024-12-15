@@ -22,14 +22,16 @@ const HaltCourse = () => {
         borderRadius={2.5}
         justifyContent="space-between">
         <Box display="flex" gap={1}>
-          <Image
-            src={
-              "https://cdn4.iconfinder.com/data/icons/logos-brands-in-colors/3000/figma-logo-512.png"
-            }
-            alt="figma"
-            width={50}
-            height={50}
-          />
+          <Box display={{ xs: "none", md: "block" }}>
+            <Image
+              src={
+                "https://cdn4.iconfinder.com/data/icons/logos-brands-in-colors/3000/figma-logo-512.png"
+              }
+              alt="figma"
+              width={50}
+              height={50}
+            />
+          </Box>
           <Box>
             <Typography variant="h5" fontWeight={450}>
               Japanese
@@ -55,7 +57,12 @@ const HaltCourse = () => {
         </Button>
       </Box>
 
-      <Box display="flex" gap={2}>
+      <Box
+        display={{
+          xs: "none",
+          md: "flex",
+        }}
+        gap={2}>
         <ArrowBackIcon
           sx={{
             border: "1px solid black",

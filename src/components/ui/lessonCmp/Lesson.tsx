@@ -23,7 +23,7 @@ const Lesson = ({ ls, duration }: { ls: Props; duration: number }) => {
         borderRadius: 2.5,
       }}>
       <Box
-        mx={{
+        sx={{
           display: "flex",
           gap: 1,
           justifyContent: "space-between",
@@ -36,7 +36,7 @@ const Lesson = ({ ls, duration }: { ls: Props; duration: number }) => {
               md: "block",
             },
           }}>
-          <Image src={ls?.photoURL} alt="figma" width={50} height={50} />
+          <Image src={ls?.photoURL} alt={name} width={50} height={50} />
         </Box>
         <Box>
           <Typography variant="h5" fontWeight={450}>

@@ -4,7 +4,6 @@
 import { Box, Button, Typography } from "@mui/material";
 import VocabularyCard from "./VocabularyCard";
 import { useRouter } from "next/navigation";
-import { completeVocabApi } from "@/services/userApi/vocab.api";
 import { completeLessonApi } from "@/services/userApi/lesson.api";
 import Confetti from "react-confetti";
 import React from "react";
@@ -25,17 +24,13 @@ const Vocabulary = ({ vocab, nextId, vocabId }: Props) => {
   const [complete, setComplete] = React.useState(false);
 
   const handleNext = async () => {
-    const vocab = await completeVocabApi(nextId?._id);
-
-    if (vocab.success) {
-      navigate.push(`/lesson/${vocabId}/${nextId?._id}`);
-    }
+    navigate.push(`/lesson/${vocabId}/${nextId?._id}`);
   };
 
   const handleComplete = async (id: string) => {
     const lesson = await completeLessonApi(id);
 
-    if (lesson.success) {
+    if (lesson?.success) {
       setComplete(true);
       setTimeout(() => {
         navigate.push("/lesson");
@@ -47,7 +42,6 @@ const Vocabulary = ({ vocab, nextId, vocabId }: Props) => {
     <Box>
       <Typography variant="h5">
         {vocab?.lessonId?.number} - {vocab?.word}
-        message
       </Typography>
 
       <VocabularyCard vocab={vocab} />

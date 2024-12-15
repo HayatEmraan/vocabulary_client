@@ -10,9 +10,10 @@ const Page = async ({ params }: { params: { id: string } }) => {
   const obj = {
     name: lesson.name,
     number: lesson.number,
-    photo: null,
+    photo: lesson?.photoURL,
     photoPreview: lesson.photoURL,
     _id: lesson._id,
+    reason: lesson?.reason,
   };
 
   return (
